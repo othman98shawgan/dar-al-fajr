@@ -11,11 +11,11 @@ class GallerySection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final galleryImages = [
-      'https://picsum.photos/id/1018/800/400',
-      'https://picsum.photos/id/1015/800/400',
-      'https://picsum.photos/id/1016/800/400',
-    ];
+    // Generate a list of local asset paths for your 9 images
+    final galleryImages = List.generate(
+      9,
+      (index) => 'assets/images/image-${(index + 1).toString().padLeft(2, '0')}.jpg',
+    );
 
     final screenHeight = MediaQuery.of(context).size.height;
     final sectionHeight = screenHeight * 0.90; // Subtracting app bar height
@@ -36,11 +36,13 @@ class GallerySection extends StatelessWidget {
           const Text("Photo Gallery", style: TextStyle(fontSize: sectionTitleFontSize, color: Color(0xFF1A6560))),
           const SizedBox(height: 16),
           CarouselSlider(
-            options: CarouselOptions(autoPlay: true, height: 300, enlargeCenterPage: true),
+            options: CarouselOptions(autoPlay: true, height: 500, enlargeCenterPage: true),
+            // Use Image.asset for local images
             items: galleryImages
-                .map((img) => ClipRRect(
+                .map((imgPath) => ClipRRect(
                       borderRadius: BorderRadius.circular(12),
-                      child: Image.network(img, fit: BoxFit.cover, width: double.infinity),
+                      // Change from Image.network to Image.asset
+                      child: Image.asset(imgPath, fit: BoxFit.cover, width: double.infinity),
                     ))
                 .toList(),
           ),
