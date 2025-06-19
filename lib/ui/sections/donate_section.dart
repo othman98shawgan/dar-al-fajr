@@ -11,7 +11,7 @@ class DonateSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
-    final sectionHeight = screenHeight - 60; // Subtracting app bar height
+    final sectionHeight = screenHeight * 0.90; // Subtracting app bar height
     const sectionTitleFontSize = 36.0;
     const bankDetails = "Bank Name: Al Quds Islamic Bank\n"
         "Branch: Kfar Kama Branch (123)\n"
@@ -59,13 +59,10 @@ class DonateSection extends StatelessWidget {
               ],
             ),
           ),
-          SizedBox(height: sectionHeight * 0.1),
-          SizedBox(
-            height: sectionHeight * 0.05,
-            child: ScrollArrowButton(
-              arrowAnimation: arrowAnimation,
-              jumpToNext: () => jumpToNext(),
-            ),
+          SizedBox(height: sectionHeight * 0.05),
+          ScrollArrowButton(
+            arrowAnimation: arrowAnimation,
+            jumpToNext: () => jumpToNext(),
           ),
         ],
       ),

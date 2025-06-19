@@ -84,9 +84,11 @@ class _QuranCenterHomePageState extends State<QuranCenterHomePage> with TickerPr
 
   @override
   Widget build(BuildContext context) {
+    final screenHeight = MediaQuery.of(context).size.height;
+
     return Scaffold(
       appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(80),
+        preferredSize: Size.fromHeight(screenHeight * 0.10),
         child: Container(
           color: const Color(0xFF1A6560),
           padding: const EdgeInsets.symmetric(vertical: 20),

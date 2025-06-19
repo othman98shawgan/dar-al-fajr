@@ -18,7 +18,7 @@ class GallerySection extends StatelessWidget {
     ];
 
     final screenHeight = MediaQuery.of(context).size.height;
-    final sectionHeight = screenHeight - 60; // Subtracting app bar height
+    final sectionHeight = screenHeight * 0.90; // Subtracting app bar height
     const sectionTitleFontSize = 36.0;
 
     return Container(
@@ -44,12 +44,9 @@ class GallerySection extends StatelessWidget {
                     ))
                 .toList(),
           ),
-          SizedBox(
-            height: sectionHeight * 0.05,
-            child: ScrollArrowButton(
-              arrowAnimation: arrowAnimation,
-              jumpToNext: () => jumpToNext(),
-            ),
+          ScrollArrowButton(
+            arrowAnimation: arrowAnimation,
+            jumpToNext: () => jumpToNext(),
           ),
         ],
       ),

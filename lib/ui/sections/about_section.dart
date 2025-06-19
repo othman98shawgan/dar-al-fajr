@@ -12,7 +12,7 @@ class AboutSection extends StatelessWidget {
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
-    final sectionHeight = screenHeight - 60; // Subtracting app bar height
+    final sectionHeight = screenHeight * 0.90; // Subtracting app bar height
     const sectionTitleFontSize = 36.0;
 
     return Container(
@@ -46,13 +46,10 @@ class AboutSection extends StatelessWidget {
               textAlign: TextAlign.center,
             ),
           ),
-          SizedBox(height: sectionHeight * 0.30),
-          SizedBox(
-            height: sectionHeight * 0.05,
-            child: ScrollArrowButton(
-              arrowAnimation: arrowAnimation,
-              jumpToNext: () => jumpToNext(),
-            ),
+          SizedBox(height: sectionHeight * 0.25),
+          ScrollArrowButton(
+            arrowAnimation: arrowAnimation,
+            jumpToNext: () => jumpToNext(),
           ),
         ],
       ),
