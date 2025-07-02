@@ -1,4 +1,3 @@
-// Quran Center Landing Page in Flutter Web
 import 'package:flutter/material.dart';
 import 'ui/sections/home_section.dart';
 import 'ui/sections/about_section.dart';
@@ -35,103 +34,77 @@ class QuranCenterHomePage extends StatefulWidget {
   State<QuranCenterHomePage> createState() => _QuranCenterHomePageState();
 }
 
-class _QuranCenterHomePageState extends State<QuranCenterHomePage> with TickerProviderStateMixin {
-  final PageController _pageController = PageController();
-  late final AnimationController _arrowController;
-  late final Animation<double> _arrowAnimation;
+class _QuranCenterHomePageState extends State<QuranCenterHomePage> {
+  final ScrollController _scrollController = ScrollController();
 
-  @override
-  void initState() {
-    super.initState();
-    _arrowController = AnimationController(
-      duration: const Duration(milliseconds: 1000),
-      vsync: this,
-    )..repeat(reverse: true);
-    _arrowAnimation = Tween<double>(begin: 0, end: 10).animate(
-      CurvedAnimation(parent: _arrowController, curve: Curves.easeInOut),
-    );
-  }
+  final homeKey = GlobalKey();
+  final aboutKey = GlobalKey();
+  final donateKey = GlobalKey();
+  final galleryKey = GlobalKey();
+  final teamKey = GlobalKey();
 
-  @override
-  void dispose() {
-    _arrowController.dispose();
-    super.dispose();
-  }
-
-  void scrollToPage(int pageIndex) {
-    _pageController.animateToPage(
-      pageIndex,
-      duration: const Duration(milliseconds: 600),
-      curve: Curves.easeInOut,
-    );
-  }
-
-  Widget jumpButton(int pageIndex) {
-    return Padding(
-      padding: const EdgeInsets.only(top: 24.0),
-      child: AnimatedBuilder(
-        animation: _arrowAnimation,
-        builder: (context, child) => Transform.translate(
-          offset: Offset(0, _arrowAnimation.value),
-          child: IconButton(
-            icon: const Icon(Icons.keyboard_arrow_down, size: 36, color: Color(0xFF1A6560)),
-            onPressed: () => scrollToPage(pageIndex),
-          ),
-        ),
-      ),
-    );
+  void scrollTo(GlobalKey key) {
+    final ctx = key.currentContext;
+    if (ctx != null) {
+      Scrollable.ensureVisible(
+        ctx,
+        duration: const Duration(milliseconds: 600),
+        curve: Curves.easeInOut,
+      );
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    final screenHeight = MediaQuery.of(context).size.height;
-
     return Scaffold(
-      appBar: PreferredSize(
-        preferredSize: Size.fromHeight(screenHeight * 0.10),
-        child: Container(
-          color: const Color(0xFF1A6560),
-          padding: const EdgeInsets.symmetric(vertical: 20),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              TextButton(
-                onPressed: () => scrollToPage(0),
-                child: const Text("Home", style: TextStyle(color: Colors.white)),
-              ),
-              TextButton(
-                onPressed: () => scrollToPage(1),
-                child: const Text("About", style: TextStyle(color: Colors.white)),
-              ),
-              TextButton(
-                onPressed: () => scrollToPage(2),
-                child: const Text("Donate", style: TextStyle(color: Colors.white)),
-              ),
-              TextButton(
-                onPressed: () => scrollToPage(3),
-                child: const Text("Gallery", style: TextStyle(color: Colors.white)),
-              ),
-              TextButton(
-                onPressed: () => scrollToPage(4),
-                child: const Text("Team", style: TextStyle(color: Colors.white)),
-              ),
-            ],
-          ),
+      appBar: AppBar(
+        backgroundColor: const Color(0xFF1A6560),
+        centerTitle: true,
+        title: LayoutBuilder(
+          builder: (context, constraints) {
+            final isMobile = constraints.maxWidth < 600;
+
+            return Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                _navButton("Home", () => scrollTo(homeKey), isMobile),
+                _navButton("About", () => scrollTo(aboutKey), isMobile),
+                _navButton("Donate", () => scrollTo(donateKey), isMobile),
+                _navButton("Gallery", () => scrollTo(galleryKey), isMobile),
+                _navButton("Team", () => scrollTo(teamKey), isMobile),
+              ],
+            );
+          },
         ),
       ),
-      body: PageView(
-        controller: _pageController,
-        scrollDirection: Axis.vertical,
-        pageSnapping: true,
-        physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
-        children: [
-          HomeSection(
-              jumpToNext: () => scrollToPage(1), donateButton: () => scrollToPage(2), arrowAnimation: _arrowAnimation),
-          AboutSection(jumpToNext: () => scrollToPage(2), arrowAnimation: _arrowAnimation),
-          DonateSection(jumpToNext: () => scrollToPage(3), arrowAnimation: _arrowAnimation),
-          GallerySection(jumpToNext: () => scrollToPage(4), arrowAnimation: _arrowAnimation),
-          TeamSection(),
-        ],
+      body: SingleChildScrollView(
+        controller: _scrollController,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            KeyedSubtree(key: homeKey, child: HomeSection(donateKey: donateKey)),
+            KeyedSubtree(key: aboutKey, child: const AboutSection()),
+            KeyedSubtree(key: donateKey, child: const DonateSection()),
+            KeyedSubtree(key: galleryKey, child: const GallerySection()),
+            KeyedSubtree(key: teamKey, child: const TeamSection()),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _navButton(String label, VoidCallback onPressed, bool isMobile) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 0.0),
+      child: TextButton(
+        onPressed: onPressed,
+        child: Text(
+          label,
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: isMobile ? 10 : 16, // smaller on mobile
+          ),
+        ),
       ),
     );
   }
