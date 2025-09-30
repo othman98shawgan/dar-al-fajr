@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:visibility_detector/visibility_detector.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+
+import '../widgets/animated_entry.dart';
 
 class TeamSection extends StatefulWidget {
   const TeamSection({super.key});
@@ -36,55 +38,59 @@ class _TeamSectionState extends State<TeamSection> {
           setState(() => visible = true);
         }
       },
-      child: AnimatedOpacity(
-        opacity: visible ? 1 : 0,
-        duration: const Duration(milliseconds: 800),
-        child: AnimatedSlide(
-          offset: visible ? Offset.zero : const Offset(0, 0.2),
-          duration: const Duration(milliseconds: 800),
-          child: Container(
-            width: double.infinity,
-            padding: EdgeInsets.symmetric(horizontal: isMobile ? 16 : 64, vertical: 32),
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                colors: [Color(0x4DF1D31D), Color(0x101A6560)],
-              ),
+      child: Container(
+        width: double.infinity,
+        padding: EdgeInsets.symmetric(horizontal: isMobile ? 16 : 64, vertical: 32),
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Color(0x4DF1D31D), Color(0x101A6560)],
+          ),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            AnimatedEntry(
+              visible: visible,
+              delayMs: 100,
+              child: const Text("Our Team", style: TextStyle(fontSize: 36, color: Color(0xFF1A6560))),
             ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                const Text("Our Team", style: TextStyle(fontSize: 36, color: Color(0xFF1A6560))),
-                const SizedBox(height: 32),
-                Center(
-                  child: ConstrainedBox(
-                    constraints: BoxConstraints(maxWidth: 600),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: management.map(_buildCard).toList(),
-                    ),
+            const SizedBox(height: 32),
+            AnimatedEntry(
+              visible: visible,
+              delayMs: 200,
+              child: Center(
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(maxWidth: 600),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: management.map(_buildCard).toList(),
                   ),
                 ),
-                const SizedBox(height: 32),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    IconButton(
-                      icon: const FaIcon(FontAwesomeIcons.youtube, color: Colors.red),
-                      onPressed: () => launchUrl(Uri.parse(youtubeUrl)),
-                      tooltip: "Visit our YouTube channel",
-                    ),
-                    const SizedBox(width: 16),
-                    IconButton(
-                      icon: const Icon(Icons.email, color: Colors.black87),
-                      onPressed: () => launchUrl(Uri.parse("mailto:$contactEmail")),
-                      tooltip: contactEmail,
-                    ),
-                  ],
-                ),
-                SizedBox(height: isMobile ? 0 : 96), // Spacer between sections
-              ],
+              ),
             ),
-          ),
+            const SizedBox(height: 32),
+            AnimatedEntry(
+              visible: visible,
+              delayMs: 400,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  IconButton(
+                    icon: const FaIcon(FontAwesomeIcons.youtube, color: Colors.red),
+                    onPressed: () => launchUrl(Uri.parse(youtubeUrl)),
+                    tooltip: "Visit our YouTube channel",
+                  ),
+                  const SizedBox(width: 16),
+                  IconButton(
+                    icon: const Icon(Icons.email, color: Colors.black87),
+                    onPressed: () => launchUrl(Uri.parse("mailto:$contactEmail")),
+                    tooltip: contactEmail,
+                  ),
+                ],
+              ),
+            ),
+            SizedBox(height: isMobile ? 0 : 96),
+          ],
         ),
       ),
     );
