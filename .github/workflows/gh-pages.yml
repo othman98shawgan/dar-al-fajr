@@ -2,10 +2,9 @@ name: Deploy Flutter Web to GitHub Pages (Actions)
 
 on:
   push:
-    branches: [develop] # change if you deploy from main
+    branches: [ develop ]   # change if you deploy from main
   workflow_dispatch:
 
-# Required for the official Pages deploy
 permissions:
   contents: read
   pages: write
@@ -29,14 +28,16 @@ jobs:
 
       - run: flutter pub get
 
-      # If you're using a project page (https://user.github.io/repo/), keep base-href=/repo/
-      # If you're using a custom domain, change to --base-href=/
+      # Custom domain => root path
       - name: Build web (release)
         run: flutter build web --release --base-href=/
 
-      # SPA fallback for GitHub Pages (still needed)
+      # SPA fallback for GitHub Pages
       - name: Add 404.html for SPA
         run: cp build/web/index.html build/web/404.html
+
+      - name: Write CNAME for Pages
+        run: echo www.daralfajr.org > build/web/CNAME
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
