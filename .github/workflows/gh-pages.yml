@@ -1,8 +1,11 @@
 name: Deploy Flutter Web to GitHub Pages
 on:
   push:
-    branches: [ develop ]
+    branches: [develop]
   workflow_dispatch:
+
+permissions:
+  contents: write
 
 jobs:
   build-deploy:
@@ -12,19 +15,20 @@ jobs:
 
       - uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.29.0'
+          flutter-version: "3.29.0"
           channel: stable
 
       - run: flutter pub get
       - run: flutter build web --release --base-href=/
 
-      # SPA fallback on GitHub Pages: copy index.html → 404.html
+      # SPA fallback for GitHub Pages
       - name: Add 404.html for SPA
         run: cp build/web/index.html build/web/404.html
 
-      - name: Deploy to gh-pages branch
+      - name: Deploy to gh-pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: build/web
-          force_orphan: true
+          publish_branch: gh-pages
+          force_orphan: true # set to false if branch is protected
