@@ -1,14 +1,22 @@
-name: Deploy Flutter Web to GitHub Pages
+name: Deploy Flutter Web to GitHub Pages (Actions)
+
 on:
   push:
-    branches: [develop]
+    branches: [ develop ]   # change if you deploy from main
   workflow_dispatch:
 
+# Required for the official Pages deploy
 permissions:
-  contents: write
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
 
 jobs:
-  build-deploy:
+  build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -17,18 +25,34 @@ jobs:
         with:
           flutter-version: "3.29.0"
           channel: stable
+          cache: true
 
       - run: flutter pub get
-      - run: flutter build web --release --base-href=/
 
-      # SPA fallback for GitHub Pages
+      # If you're using a project page (https://user.github.io/repo/), keep base-href=/repo/
+      # If you're using a custom domain, change to --base-href=/
+      - name: Build web (release)
+        run: flutter build web --release --base-href=/${{ github.event.repository.name }}/
+
+      # SPA fallback for GitHub Pages (still needed)
       - name: Add 404.html for SPA
         run: cp build/web/index.html build/web/404.html
 
-      - name: Deploy to gh-pages
-        uses: peaceiris/actions-gh-pages@v3
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: build/web
-          publish_branch: gh-pages
-          force_orphan: true # set to false if branch is protected
+          path: build/web
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
