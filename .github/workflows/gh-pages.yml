@@ -2,7 +2,7 @@ name: Deploy Flutter Web to GitHub Pages (Actions)
 
 on:
   push:
-    branches: [ develop ]   # change if you deploy from main
+    branches: [develop] # change if you deploy from main
   workflow_dispatch:
 
 # Required for the official Pages deploy
@@ -32,7 +32,7 @@ jobs:
       # If you're using a project page (https://user.github.io/repo/), keep base-href=/repo/
       # If you're using a custom domain, change to --base-href=/
       - name: Build web (release)
-        run: flutter build web --release --base-href=/${{ github.event.repository.name }}/
+        run: flutter build web --release --base-href=/
 
       # SPA fallback for GitHub Pages (still needed)
       - name: Add 404.html for SPA
