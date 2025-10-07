@@ -17,10 +17,10 @@ class ContentConfig {
   static const studentPayUrl = 'https://pay.sumit.co.il/frrouf/i66g6b/c/payment/';
 
   // Bottom row (YouTube, phone, WhatsApp, email)
-  static const contactPhone = 'tel:+972501234567'; // main phone
-  static const whatsappLink = 'https://wa.me/972501234567'; // main WhatsApp
-  static const contactEmail = 'mailto:info@daralfajr.org'; // change if needed
-  static const youtubeUrl = 'https://youtube.com/@daralfajr';
+  static const contactPhone = 'tel:+972512875576';
+  static const whatsappLink = 'https://wa.me/972512875576';
+  static const contactEmail = 'mailto:daralfajrkk@gmail.com';
+  static const youtubeUrl = 'https://youtube.com/@Dar-al-Fajr';
 }
 
 /// ===== Home section =====
@@ -186,33 +186,33 @@ class ContactContent {
   static List<Member> boardMembers = const [
     Member(
       name: 'Aslan Nash',
-      role: {'en': 'Center Manager', 'ar': 'مدير المركز', 'he': 'מנהל המרכז'},
-      phone: 'tel:+972501234567',
-      whatsapp: 'https://wa.me/972501234567',
+      role: {'en': 'Board member', 'ar': 'عضو إدارة', 'he': 'חבר הנהלה'},
+      phone: 'tel:+972532737826',
+      whatsapp: 'https://wa.me/972532737826',
     ),
     Member(
       name: 'Ahmad Shawgan',
       role: {'en': 'Board member', 'ar': 'عضو إدارة', 'he': 'חבר הנהלה'},
-      phone: 'tel:+972501234568',
-      whatsapp: 'https://wa.me/972501234568',
+      phone: 'tel:+972507864552',
+      whatsapp: 'https://wa.me/972507864552',
     ),
     Member(
       name: 'Noah Thawko',
       role: {'en': 'Board member', 'ar': 'عضو إدارة', 'he': 'חבר הנהלה'},
-      phone: 'tel:+972501234568',
-      whatsapp: 'https://wa.me/972501234568',
+      phone: 'tel:+972506825975',
+      whatsapp: 'https://wa.me/972506825975',
     ),
     Member(
       name: 'Hani Ashmooz',
       role: {'en': 'Board member', 'ar': 'عضو إدارة', 'he': 'חבר הנהלה'},
-      phone: 'tel:+972501234568',
-      whatsapp: 'https://wa.me/972501234568',
+      phone: 'tel:+972505213482',
+      whatsapp: 'https://wa.me/972505213482',
     ),
     Member(
       name: 'Sam Thawko',
-      role: {'en': 'Board member', 'ar': 'عضו إدارة', 'he': 'חבר הנהלה'},
-      phone: 'tel:+972501234568',
-      whatsapp: 'https://wa.me/972501234568',
+      role: {'en': 'Board member', 'ar': 'عضو إدارة', 'he': 'חבר הנהלה'},
+      phone: 'tel:+972543046004',
+      whatsapp: 'https://wa.me/972543046004',
     ),
   ];
 }
