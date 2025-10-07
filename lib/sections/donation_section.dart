@@ -15,6 +15,7 @@ class DonationSection extends StatelessWidget {
   Widget build(BuildContext context) {
     final w = MediaQuery.sizeOf(context).width;
     final isMobile = w < 700;
+    const double bankCardMaxWidth = 480;
 
     final title = t(DonationContent.title, locale);
     final subtitle = t(DonationContent.subtitle, locale);
@@ -54,89 +55,92 @@ class DonationSection extends StatelessWidget {
 
         // === Two centered CTAs (row on desktop, stacked on mobile) ===
         Center(
-          child: Wrap(
-            spacing: isMobile ? 0 : 48,
-            runSpacing: 12,
-            alignment: WrapAlignment.center,
-            children: [
-              SizedBox(
-                width: ctaWidth,
-                child: FilledButton.icon(
-                  style: FilledButton.styleFrom(
-                    minimumSize: Size(ctaWidth, ctaHeight),
-                    padding: ctaPadding,
-                    textStyle: ctaTextStyle,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: bankCardMaxWidth * 2),
+            child: Wrap(
+              spacing: isMobile ? 0 : 32,
+              runSpacing: 12,
+              alignment: WrapAlignment.center,
+              children: [
+                SizedBox(
+                  width: ctaWidth,
+                  child: FilledButton.icon(
+                    style: FilledButton.styleFrom(
+                      minimumSize: Size(ctaWidth, ctaHeight),
+                      padding: ctaPadding,
+                      textStyle: ctaTextStyle,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    ),
+                    onPressed: donateUrl.isEmpty
+                        ? null
+                        : () => launchUrl(Uri.parse(donateUrl), mode: LaunchMode.externalApplication),
+                    icon: Icon(Icons.volunteer_activism, size: ctaIconSize, color: Brand.green),
+                    label: Text(donateCta, style: const TextStyle(color: Brand.green)),
                   ),
-                  onPressed: donateUrl.isEmpty
-                      ? null
-                      : () => launchUrl(Uri.parse(donateUrl), mode: LaunchMode.externalApplication),
-                  icon: Icon(Icons.volunteer_activism, size: ctaIconSize, color: Brand.green),
-                  label: Text(donateCta, style: const TextStyle(color: Brand.green)),
                 ),
-              ),
-              SizedBox(
-                width: ctaWidth,
-                child: FilledButton.tonalIcon(
-                  style: FilledButton.styleFrom(
-                    minimumSize: Size(ctaWidth, ctaHeight),
-                    padding: ctaPadding,
-                    textStyle: ctaTextStyle,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                SizedBox(
+                  width: ctaWidth,
+                  child: FilledButton.tonalIcon(
+                    style: FilledButton.styleFrom(
+                      minimumSize: Size(ctaWidth, ctaHeight),
+                      padding: ctaPadding,
+                      textStyle: ctaTextStyle,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    ),
+                    onPressed: studentUrl.isEmpty
+                        ? null
+                        : () => launchUrl(Uri.parse(studentUrl), mode: LaunchMode.externalApplication),
+                    icon: Icon(Icons.school, size: ctaIconSize, color: Brand.green),
+                    label: Text(studentCta, style: const TextStyle(color: Brand.green)),
                   ),
-                  onPressed: studentUrl.isEmpty
-                      ? null
-                      : () => launchUrl(Uri.parse(studentUrl), mode: LaunchMode.externalApplication),
-                  icon: Icon(Icons.school, size: ctaIconSize, color: Brand.green),
-                  label: Text(studentCta, style: const TextStyle(color: Brand.green)),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
 
-        const SizedBox(height: 24),
+        const SizedBox(height: 32),
 
         // === Always-visible Bank details card ===
-        Card(
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
+        Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: bankCardMaxWidth),
+            child: Card(
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Icon(Icons.account_balance, color: Brand.text),
-                    const SizedBox(width: 8),
-                    Text(bankTitle, style: const TextStyle(fontWeight: FontWeight.w700)),
-                  ],
-                ),
-                // inside the bank card:
-                const SizedBox(height: 10),
-                Directionality(
-                  textDirection: TextDirection.rtl, // Hebrew block only
-                  child: SelectableText.rich(
-                    _buildBankDetailsSpan(bankBlock),
-                    textAlign: TextAlign.start,
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          fontFamily: 'monospace',
-                          fontSize: 14,
-                          height: 1.55,
+                    Row(children: [
+                      const Icon(Icons.account_balance, color: Brand.green),
+                      const SizedBox(width: 8),
+                      Text(bankTitle, style: const TextStyle(fontWeight: FontWeight.w700)),
+                    ]),
+                    const SizedBox(height: 16),
+                    // keep the RTL block if you added it earlier:
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Directionality(
+                            textDirection: TextDirection.rtl,
+                            child: SelectableText.rich(_buildBankDetailsSpan(bankBlock))),
+                      ],
+                    ),
+
+                    const SizedBox(height: 12),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        TextButton.icon(
+                          onPressed: () async {/* copy */},
+                          icon: const Icon(Icons.copy),
+                          label: Text(copyCta),
                         ),
-                  ),
-                ),
-                const SizedBox(height: 12),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    TextButton.icon(
-                      onPressed: () async {/* copy */},
-                      icon: const Icon(Icons.copy),
-                      label: Text(copyCta),
+                      ],
                     ),
                   ],
                 ),
-              ],
+              ),
             ),
           ),
         ),
