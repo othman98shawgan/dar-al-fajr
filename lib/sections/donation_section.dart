@@ -11,6 +11,8 @@ class DonationSection extends StatelessWidget {
   final AppLocale locale;
   const DonationSection({super.key, required this.locale});
 
+  static const _providerDomain = 'summit.co.il';
+
   @override
   Widget build(BuildContext context) {
     final w = MediaQuery.sizeOf(context).width;
@@ -20,7 +22,7 @@ class DonationSection extends StatelessWidget {
     final title = t(DonationContent.title, locale);
     final subtitle = t(DonationContent.subtitle, locale);
 
-    // Always render Hebrew bank details as requested
+    // Always show Hebrew bank details
     final bankBlock = t(DonationContent.bankDetails, 'he');
 
     final bankTitle = t(DonationContent.bankTitle, locale);
@@ -33,6 +35,13 @@ class DonationSection extends StatelessWidget {
     final donateUrl = ContentConfig.donateUrl;
     final studentUrl = ContentConfig.studentPayUrl;
 
+    final providerNote = t({
+      'en': 'Payments are securely processed by $_providerDomain',
+      'ar': 'يتم معالجة المدفوعات بأمان عبر $_providerDomain',
+      'he': 'התשלומים מעובדים באופן מאובטח דרך $_providerDomain',
+    }, locale);
+
+    // CTA sizing
     final ctaWidth = isMobile ? double.infinity : (w < 1200 ? 320.0 : 360.0);
     final ctaHeight = isMobile ? 48.0 : 60.0;
     final ctaPadding = EdgeInsets.symmetric(
@@ -51,7 +60,12 @@ class DonationSection extends StatelessWidget {
         const SizedBox(height: 8),
         Text(subtitle, style: Theme.of(context).textTheme.bodyLarge),
 
-        const SizedBox(height: 24),
+        const SizedBox(height: 20),
+
+        // Provider badge (outside the buttons)
+        Center(child: _ProviderBadge(text: providerNote)),
+
+        const SizedBox(height: 16),
 
         // === Two centered CTAs (row on desktop, stacked on mobile) ===
         Center(
@@ -62,36 +76,61 @@ class DonationSection extends StatelessWidget {
               runSpacing: 12,
               alignment: WrapAlignment.center,
               children: [
+                // Donate by card (filled)
                 SizedBox(
                   width: ctaWidth,
-                  child: FilledButton.icon(
+                  height: ctaHeight,
+                  child: FilledButton(
                     style: FilledButton.styleFrom(
-                      minimumSize: Size(ctaWidth, ctaHeight),
                       padding: ctaPadding,
                       textStyle: ctaTextStyle,
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                     ),
-                    onPressed: donateUrl.isEmpty
-                        ? null
-                        : () => launchUrl(Uri.parse(donateUrl), mode: LaunchMode.externalApplication),
-                    icon: Icon(Icons.volunteer_activism, size: ctaIconSize, color: Brand.green),
-                    label: Text(donateCta, style: const TextStyle(color: Brand.green)),
+                    onPressed: donateUrl.isEmpty ? null : () => _safeLaunch(context, donateUrl),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.volunteer_activism, size: ctaIconSize, color: Brand.green),
+                        const SizedBox(width: 10),
+                        Flexible(
+                          child: Text(
+                            donateCta,
+                            style: const TextStyle(color: Brand.green),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
+
+                // Student payment (tonal)
                 SizedBox(
                   width: ctaWidth,
-                  child: FilledButton.tonalIcon(
+                  height: ctaHeight,
+                  child: FilledButton.tonal(
                     style: FilledButton.styleFrom(
-                      minimumSize: Size(ctaWidth, ctaHeight),
                       padding: ctaPadding,
                       textStyle: ctaTextStyle,
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                     ),
-                    onPressed: studentUrl.isEmpty
-                        ? null
-                        : () => launchUrl(Uri.parse(studentUrl), mode: LaunchMode.externalApplication),
-                    icon: Icon(Icons.school, size: ctaIconSize, color: Brand.green),
-                    label: Text(studentCta, style: const TextStyle(color: Brand.green)),
+                    onPressed: studentUrl.isEmpty ? null : () => _safeLaunch(context, studentUrl),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.school, size: ctaIconSize, color: Brand.green),
+                        const SizedBox(width: 10),
+                        Flexible(
+                          child: Text(
+                            studentCta,
+                            style: const TextStyle(color: Brand.green),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ],
@@ -117,22 +156,32 @@ class DonationSection extends StatelessWidget {
                       Text(bankTitle, style: const TextStyle(fontWeight: FontWeight.w700)),
                     ]),
                     const SizedBox(height: 16),
-                    // keep the RTL block if you added it earlier:
+                    // Hebrew block should flow RTL
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Directionality(
-                            textDirection: TextDirection.rtl,
-                            child: SelectableText.rich(_buildBankDetailsSpan(bankBlock))),
+                          textDirection: TextDirection.rtl,
+                          child: SelectableText.rich(
+                            _buildBankDetailsSpan(bankBlock),
+                            style: const TextStyle(fontFamily: 'monospace', height: 1.5),
+                          ),
+                        ),
                       ],
                     ),
-
                     const SizedBox(height: 12),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
                         TextButton.icon(
-                          onPressed: () async {/* copy */},
+                          onPressed: () async {
+                            await Clipboard.setData(ClipboardData(text: bankBlock));
+                            if (context.mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text(copiedMsg)),
+                              );
+                            }
+                          },
                           icon: const Icon(Icons.copy),
                           label: Text(copyCta),
                         ),
@@ -145,6 +194,96 @@ class DonationSection extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+
+  /// Safety wrapper: confirm & verify the domain before launching.
+  Future<void> _safeLaunch(BuildContext context, String url) async {
+    final uri = Uri.tryParse(url);
+    if (uri == null) return;
+    final host = uri.host.toLowerCase();
+    final trusted = host == _providerDomain || host.endsWith('.$_providerDomain');
+
+    if (!trusted) {
+      await showDialog<void>(
+        context: context,
+        builder: (ctx) => AlertDialog(
+          title: const Text('Unsafe link'),
+          content: Text('This link points to:\n$host\n\nExpected domain: $_providerDomain'),
+          actions: [
+            TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Close')),
+          ],
+        ),
+      );
+      return;
+    }
+
+    final proceed = await _confirmExternalLaunchDialog(context, uri);
+    if (proceed != true) return;
+
+    await launchUrl(uri, mode: LaunchMode.externalApplication);
+  }
+
+  Future<bool?> _confirmExternalLaunchDialog(BuildContext context, Uri uri) {
+    final l = LocaleScope.of(context).value;
+    final title = t({
+      'en': 'Leaving site',
+      'ar': 'ستغادر الموقع',
+      'he': 'אתם עומדים לצאת מהאתר',
+    }, l);
+    final msg = t({
+      'en': 'You are going to $_providerDomain.\nPlease verify the address before paying:\n${uri.toString()}',
+      'ar': 'ستنتقل إلى $_providerDomain.\nيرجى التحقق من العنوان قبل الدفع:\n${uri.toString()}',
+      'he': 'אתם עוברים ל־$_providerDomain.\nאשרו שהכתובת נכונה לפני התשלום:\n${uri.toString()}',
+    }, l);
+    final cancel = t({'en': 'Cancel', 'ar': 'إلغاء', 'he': 'ביטול'}, l);
+    final cont = t({'en': 'Continue', 'ar': 'متابعة', 'he': 'המשך'}, l);
+
+    return showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(title),
+        content: SelectableText(
+          msg,
+          style: const TextStyle(fontFamily: 'monospace', height: 1.3),
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx, false), child: Text(cancel)),
+          FilledButton(onPressed: () => Navigator.pop(ctx, true), child: Text(cont)),
+        ],
+      ),
+    );
+  }
+}
+
+/// Small centered badge under the subtitle / above CTAs.
+class _ProviderBadge extends StatelessWidget {
+  final String text;
+  const _ProviderBadge({required this.text});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      decoration: BoxDecoration(
+        color: Theme.of(context).cardColor,
+        borderRadius: BorderRadius.circular(999),
+        border: Border.all(color: Brand.outline),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Icon(Icons.lock_outline_rounded, size: 14, color: Brand.green),
+          const SizedBox(width: 6),
+          Text(
+            text,
+            style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                  color: Brand.green.withOpacity(0.9),
+                  fontWeight: FontWeight.w600,
+                ),
+          ),
+        ],
+      ),
     );
   }
 }

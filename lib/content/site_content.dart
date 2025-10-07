@@ -236,7 +236,7 @@ class Member {
 class NavContent {
   static const home = {'en': 'Home', 'ar': 'الرئيسية', 'he': 'בית'};
   static const about = {'en': 'About', 'ar': 'من نحن', 'he': 'אודות'};
-  static const donate = {'en': 'Donate', 'ar': 'تبرّع', 'he': 'תרומה'};
+  static const donate = {'en': 'Support', 'ar': 'تبرّع', 'he': 'תרומה'};
   static const photos = {'en': 'Photos', 'ar': 'صور', 'he': 'תמונות'};
   static const contact = {'en': 'Contact', 'ar': 'تواصل', 'he': 'יצירת קשר'};
 }
