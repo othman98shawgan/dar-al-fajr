@@ -44,7 +44,7 @@ class SiteAppBar extends StatelessWidget implements PreferredSizeWidget {
     return AppBar(
       elevation: 0,
       toolbarHeight: isMobile ? 64 : 72,
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).appBarTheme.backgroundColor ?? Brand.nav,
       surfaceTintColor: Colors.transparent,
       titleSpacing: 12,
       title: Row(children: [

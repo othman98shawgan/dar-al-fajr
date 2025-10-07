@@ -13,13 +13,14 @@ String t(Map<String, String> m, AppLocale locale) {
 /// ===== Brand/config used across the app =====
 class ContentConfig {
   static const brandName = 'Dar al-Fajr';
-  static const donateUrl = 'https://example.com/pay'; // TODO
-  static const youtubeUrl = 'https://youtube.com/@daralfajr';
+  static const donateUrl = 'https://pay.sumit.co.il/frrouf/i66g0c/c/payment/';
+  static const studentPayUrl = 'https://pay.sumit.co.il/frrouf/i66g6b/c/payment/';
 
   // Bottom row (YouTube, phone, WhatsApp, email)
   static const contactPhone = 'tel:+972501234567'; // main phone
   static const whatsappLink = 'https://wa.me/972501234567'; // main WhatsApp
   static const contactEmail = 'mailto:info@daralfajr.org'; // change if needed
+  static const youtubeUrl = 'https://youtube.com/@daralfajr';
 }
 
 /// ===== Home section =====
@@ -100,6 +101,12 @@ class DonationContent {
     'he': 'תרומה בכרטיס אשראי',
   };
 
+  static const studentCta = {
+    'en': 'Student Payment',
+    'ar': 'دفع رسوم الطالب',
+    'he': 'תשלום לתלמיד',
+  };
+
   static const bankTitle = {
     'en': 'Bank Transfer',
     'ar': 'تحويل بنكي',
@@ -111,7 +118,7 @@ class DonationContent {
     'en':
         'Bank: 17 – Mercantile Discount\nBranch: HaTavor 695\nAccount Name: Dar al-Fajr Kfar Kama\nAccount Number: 69187',
     'ar': 'البنك: 17 – مركنتיל ديسكونت\nالفرع: التابور 695\nاسم الحساب: دار الفجر كفر كما\nرقم الحساب: 69187',
-    'he': 'בנק: 17 - מרכנתיל דיסקונט בע"\nסניף: התבור 695\nשם המוטב: דאר אל פג׳ר כפר כמא\nמספר חשבון: 69187',
+    'he': 'בנק: 17 - מרכנתיל דיסקונט בע"מ\nסניף: התבור 695\nשם המוטב: דאר אל פג׳ר כפר כמא\nמספר חשבון: 69187',
   };
 
   static const copyCta = {
@@ -229,7 +236,7 @@ class Member {
 class NavContent {
   static const home = {'en': 'Home', 'ar': 'الرئيسية', 'he': 'בית'};
   static const about = {'en': 'About', 'ar': 'من نحن', 'he': 'אודות'};
-  static const donate = {'en': 'Donate', 'ar': 'تبرّع', 'he': 'תרומה'};
+  static const donate = {'en': 'Support', 'ar': 'تبرّع', 'he': 'תרומה'};
   static const photos = {'en': 'Photos', 'ar': 'صور', 'he': 'תמונות'};
   static const contact = {'en': 'Contact', 'ar': 'تواصل', 'he': 'יצירת קשר'};
 }
