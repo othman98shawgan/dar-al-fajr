@@ -13,13 +13,14 @@ String t(Map<String, String> m, AppLocale locale) {
 /// ===== Brand/config used across the app =====
 class ContentConfig {
   static const brandName = 'Dar al-Fajr';
+  static const brandLogo = 'assets/images/logo.png';
   static const donateUrl = 'https://pay.sumit.co.il/frrouf/i66g0c/c/payment/';
   static const studentPayUrl = 'https://pay.sumit.co.il/frrouf/i66g6b/c/payment/';
 
   // Bottom row (YouTube, phone, WhatsApp, email)
   static const contactPhone = 'tel:+972512875576';
   static const whatsappLink = 'https://wa.me/972512875576';
-  static const contactEmail = 'mailto:daralfajrkk@gmail.com';
+  static const contactEmail = 'mailto:daralfajerkfarkama@gmail.com';
   static const youtubeUrl = 'https://youtube.com/@Dar-al-Fajr';
 }
 

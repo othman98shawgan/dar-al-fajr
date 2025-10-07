@@ -1,5 +1,6 @@
 import 'package:dar_al_fajr/i18n/locale_scope.dart';
 import 'package:flutter/material.dart';
+import '../content/site_logo.dart';
 import '../theme/brand.dart';
 import '../content/site_content.dart';
 
@@ -48,8 +49,7 @@ class SiteAppBar extends StatelessWidget implements PreferredSizeWidget {
       surfaceTintColor: Colors.transparent,
       titleSpacing: 12,
       title: Row(children: [
-        // TODO: swap with your logo asset
-        const FlutterLogo(size: 26),
+        SiteLogo(size: isMobile ? 36 : 48),
         const SizedBox(width: 10),
         if (w >= 380) const Text('Dar al-Fajr', style: TextStyle(fontWeight: FontWeight.w700, color: Brand.green)),
       ]),
@@ -175,7 +175,7 @@ class _LocaleButton extends StatelessWidget {
           ],
         ],
       ),
-      onSelected: (code) => onChanged(code as AppLocale),
+      onSelected: (code) => onChanged(code),
       itemBuilder: (ctx) => [
         for (final l in langs)
           PopupMenuItem(
