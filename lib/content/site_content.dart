@@ -13,7 +13,8 @@ String t(Map<String, String> m, AppLocale locale) {
 /// ===== Brand/config used across the app =====
 class ContentConfig {
   static const brandName = 'Dar al-Fajr';
-  static const donateUrl = 'https://example.com/pay'; // TODO
+  static const donateUrl = 'https://example.com/pay'; // update
+  static const studentPayUrl = 'https://example.com/student'; // NEW: update
   static const youtubeUrl = 'https://youtube.com/@daralfajr';
 
   // Bottom row (YouTube, phone, WhatsApp, email)
@@ -100,6 +101,12 @@ class DonationContent {
     'he': 'תרומה בכרטיס אשראי',
   };
 
+  static const studentCta = {
+    'en': 'Student Payment',
+    'ar': 'دفع رسوم الطالب',
+    'he': 'תשלום לתלמיד',
+  };
+
   static const bankTitle = {
     'en': 'Bank Transfer',
     'ar': 'تحويل بنكي',
@@ -111,7 +118,7 @@ class DonationContent {
     'en':
         'Bank: 17 – Mercantile Discount\nBranch: HaTavor 695\nAccount Name: Dar al-Fajr Kfar Kama\nAccount Number: 69187',
     'ar': 'البنك: 17 – مركنتיל ديسكونت\nالفرع: التابور 695\nاسم الحساب: دار الفجر كفر كما\nرقم الحساب: 69187',
-    'he': 'בנק: 17 - מרכנתיל דיסקונט בע"\nסניף: התבור 695\nשם המוטב: דאר אל פג׳ר כפר כמא\nמספר חשבון: 69187',
+    'he': 'בנק: 17 - מרכנתיל דיסקונט בע"מ\nסניף: התבור 695\nשם המוטב: דאר אל פג׳ר כפר כמא\nמספר חשבון: 69187',
   };
 
   static const copyCta = {

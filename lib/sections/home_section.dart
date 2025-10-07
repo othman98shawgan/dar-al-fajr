@@ -71,30 +71,6 @@ class HomeSection extends StatelessWidget {
             _StatCard(label: labels['years']!, value: values['years']!, valueBoxWidth: valueBoxWidth),
           ],
         ),
-
-        SizedBox(height: isMobile ? 20 : 28),
-
-        // Donate button: full width on mobile, normal on desktop
-        Align(
-          alignment: Alignment.center,
-          child: ConstrainedBox(
-            constraints: BoxConstraints(
-              maxWidth: isMobile ? double.infinity : 260,
-            ),
-            child: SizedBox(
-              width: isMobile ? double.infinity : null,
-              child: FilledButton(
-                onPressed: () {
-                  // scrolling handled in LandingPage; leave as-is or pass a callback later
-                },
-                style: FilledButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-                ),
-                child: Text(HomeContent.donateCta(locale)),
-              ),
-            ),
-          ),
-        ),
       ],
     );
   }
@@ -127,6 +103,7 @@ class _StatCard extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16), // comfy taps on mobile
         child: Column(
           mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             SizedBox(
               width: valueBoxWidth, // fixed width from before

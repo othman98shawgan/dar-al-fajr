@@ -63,8 +63,8 @@ class _LandingPageState extends State<LandingPage> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Section(key: homeKey, child: HomeSection(locale: l)),
-              Section(key: aboutKey, child: AboutSection(locale: l)),
               Section(key: donateKey, child: DonationSection(locale: l)),
+              Section(key: aboutKey, child: AboutSection(locale: l)),
               Section(key: photosKey, child: const PhotosSection()),
               Section(key: contactKey, child: ContactSection(locale: l)),
               const SizedBox(height: 48),
@@ -82,7 +82,7 @@ class Section extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 64.0, horizontal: 16),
+      padding: const EdgeInsets.symmetric(vertical: 48.0, horizontal: 16),
       child: Center(
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 1100),

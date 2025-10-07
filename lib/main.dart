@@ -45,28 +45,65 @@ class DarAlFajrApp extends StatelessWidget {
       theme: base.copyWith(
         textTheme: textTheme,
         scaffoldBackgroundColor: Brand.bg,
+
+        // Keep your explicit ColorScheme (fine), but surfaces will come from themes below.
         colorScheme: const ColorScheme(
           brightness: Brightness.light,
           primary: Brand.green,
           onPrimary: Colors.white,
           secondary: Brand.yellow,
           onSecondary: Brand.green,
-          surface: Colors.white,
+          surface: Brand.card,
           onSurface: Brand.text,
-          background: Brand.bg,
-          onBackground: Brand.text,
           error: Colors.red,
           onError: Colors.white,
         ),
+
+        appBarTheme: const AppBarTheme(
+          backgroundColor: Brand.nav,
+          foregroundColor: Brand.green,
+          elevation: 0,
+          surfaceTintColor: Colors.transparent,
+          scrolledUnderElevation: 0,
+          iconTheme: IconThemeData(color: Brand.green),
+          titleTextStyle: TextStyle(
+            color: Brand.green,
+            fontWeight: FontWeight.w700,
+            fontSize: 18,
+          ),
+          // crisp bottom hairline instead of drop shadow
+          shape: Border(
+            bottom: BorderSide(color: Brand.outline, width: 1),
+          ),
+        ),
+
+        cardTheme: const CardTheme(
+          color: Brand.card,
+          elevation: 0,
+          margin: EdgeInsets.zero,
+          surfaceTintColor: Colors.transparent,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(Radius.circular(16)),
+            side: BorderSide(color: Brand.outline),
+          ),
+        ),
+
+        dividerTheme: const DividerThemeData(
+          color: Brand.outline,
+          thickness: 1,
+          space: 1,
+        ),
+
         filledButtonTheme: FilledButtonThemeData(
           style: FilledButton.styleFrom(
             backgroundColor: Brand.yellow,
-            foregroundColor: Brand.green,
+            foregroundColor: Brand.text, // higher-contrast label on yellow
             textStyle: const TextStyle(fontWeight: FontWeight.w700),
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           ),
         ),
+
         outlinedButtonTheme: OutlinedButtonThemeData(
           style: OutlinedButton.styleFrom(
             foregroundColor: Brand.green,
@@ -74,11 +111,6 @@ class DarAlFajrApp extends StatelessWidget {
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           ),
-        ),
-        cardTheme: const CardTheme(
-          elevation: 0.5,
-          surfaceTintColor: Colors.transparent,
-          clipBehavior: Clip.antiAlias,
         ),
       ),
 

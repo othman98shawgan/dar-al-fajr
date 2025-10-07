@@ -1,5 +1,8 @@
+import 'dart:convert'; // LineSplitter
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:url_launcher/url_launcher.dart';
+
 import '../i18n/locale_scope.dart';
 import '../theme/brand.dart';
 import '../content/site_content.dart';
@@ -15,7 +18,30 @@ class DonationSection extends StatelessWidget {
 
     final title = t(DonationContent.title, locale);
     final subtitle = t(DonationContent.subtitle, locale);
-    final bank = t(DonationContent.bankDetails, 'he');
+
+    // Always render Hebrew bank details as requested
+    final bankBlock = t(DonationContent.bankDetails, 'he');
+
+    final bankTitle = t(DonationContent.bankTitle, locale);
+    final copyCta = t(DonationContent.copyCta, locale);
+    final copiedMsg = t(DonationContent.copied, locale);
+
+    final donateCta = t(DonationContent.cardCta, locale);
+    final studentCta = t(DonationContent.studentCta, locale);
+
+    final donateUrl = ContentConfig.donateUrl;
+    final studentUrl = ContentConfig.studentPayUrl;
+
+    final ctaWidth = isMobile ? double.infinity : (w < 1200 ? 320.0 : 360.0);
+    final ctaHeight = isMobile ? 48.0 : 60.0;
+    final ctaPadding = EdgeInsets.symmetric(
+      horizontal: isMobile ? 16 : 22,
+      vertical: isMobile ? 12 : 16,
+    );
+    final ctaTextStyle = Theme.of(context).textTheme.titleMedium?.copyWith(
+          fontWeight: FontWeight.w700,
+        );
+    final ctaIconSize = isMobile ? 20.0 : 24.0;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -23,52 +49,123 @@ class DonationSection extends StatelessWidget {
         Text(title, style: Theme.of(context).textTheme.headlineMedium),
         const SizedBox(height: 8),
         Text(subtitle, style: Theme.of(context).textTheme.bodyLarge),
+
         const SizedBox(height: 24),
 
-        // Pay by Card (primary CTA)
-        SizedBox(
-          width: isMobile ? double.infinity : 280,
-          child: FilledButton.icon(
-            onPressed: () {
-              // TODO: link to Stripe/PayPal or processor
-            },
-            icon: const Icon(Icons.lock_outline),
-            label: Text(t(DonationContent.cardCta, locale)),
+        // === Two centered CTAs (row on desktop, stacked on mobile) ===
+        Center(
+          child: Wrap(
+            spacing: isMobile ? 0 : 48,
+            runSpacing: 12,
+            alignment: WrapAlignment.center,
+            children: [
+              SizedBox(
+                width: ctaWidth,
+                child: FilledButton.icon(
+                  style: FilledButton.styleFrom(
+                    minimumSize: Size(ctaWidth, ctaHeight),
+                    padding: ctaPadding,
+                    textStyle: ctaTextStyle,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  ),
+                  onPressed: donateUrl.isEmpty
+                      ? null
+                      : () => launchUrl(Uri.parse(donateUrl), mode: LaunchMode.externalApplication),
+                  icon: Icon(Icons.volunteer_activism, size: ctaIconSize, color: Brand.green),
+                  label: Text(donateCta, style: const TextStyle(color: Brand.green)),
+                ),
+              ),
+              SizedBox(
+                width: ctaWidth,
+                child: FilledButton.tonalIcon(
+                  style: FilledButton.styleFrom(
+                    minimumSize: Size(ctaWidth, ctaHeight),
+                    padding: ctaPadding,
+                    textStyle: ctaTextStyle,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  ),
+                  onPressed: studentUrl.isEmpty
+                      ? null
+                      : () => launchUrl(Uri.parse(studentUrl), mode: LaunchMode.externalApplication),
+                  icon: Icon(Icons.school, size: ctaIconSize, color: Brand.green),
+                  label: Text(studentCta, style: const TextStyle(color: Brand.green)),
+                ),
+              ),
+            ],
           ),
         ),
 
         const SizedBox(height: 24),
 
-        // Bank Transfer (secondary)
-        ExpansionTile(
-          initiallyExpanded: false,
-          leading: const Icon(Icons.account_balance, color: Brand.green),
-          title: Text(t(DonationContent.bankTitle, locale)),
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: SelectableText(
-                bank,
-                style: const TextStyle(fontFamily: 'monospace'),
-              ),
+        // === Always-visible Bank details card ===
+        Card(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    const Icon(Icons.account_balance, color: Brand.text),
+                    const SizedBox(width: 8),
+                    Text(bankTitle, style: const TextStyle(fontWeight: FontWeight.w700)),
+                  ],
+                ),
+                // inside the bank card:
+                const SizedBox(height: 10),
+                Directionality(
+                  textDirection: TextDirection.rtl, // Hebrew block only
+                  child: SelectableText.rich(
+                    _buildBankDetailsSpan(bankBlock),
+                    textAlign: TextAlign.start,
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          fontFamily: 'monospace',
+                          fontSize: 14,
+                          height: 1.55,
+                        ),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    TextButton.icon(
+                      onPressed: () async {/* copy */},
+                      icon: const Icon(Icons.copy),
+                      label: Text(copyCta),
+                    ),
+                  ],
+                ),
+              ],
             ),
-            Align(
-              alignment: Alignment.centerRight,
-              child: TextButton.icon(
-                onPressed: () {
-                  // copy to clipboard
-                  Clipboard.setData(ClipboardData(text: bank));
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text(t(DonationContent.copied, locale))),
-                  );
-                },
-                icon: const Icon(Icons.copy),
-                label: Text(t(DonationContent.copyCta, locale)),
-              ),
-            ),
-          ],
+          ),
         ),
       ],
     );
   }
+}
+
+// === Helpers to bold the "label:" part on each line ===
+TextSpan _buildBankDetailsSpan(String block) {
+  final lines = const LineSplitter().convert(block);
+  return TextSpan(
+    style: const TextStyle(fontFamily: 'monospace', height: 1.4),
+    children: [
+      for (int i = 0; i < lines.length; i++) ..._spansForLine(lines[i], isLast: i == lines.length - 1),
+    ],
+  );
+}
+
+List<TextSpan> _spansForLine(String line, {required bool isLast}) {
+  final idx = line.indexOf(':');
+  if (idx == -1) {
+    return [TextSpan(text: line + (isLast ? '' : '\n'))];
+  }
+  final label = line.substring(0, idx + 1); // include colon
+  final value = line.substring(idx + 1).trimLeft();
+  return [
+    TextSpan(text: '$label ', style: const TextStyle(fontWeight: FontWeight.w700)),
+    TextSpan(text: value),
+    if (!isLast) const TextSpan(text: '\n'),
+  ];
 }
