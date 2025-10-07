@@ -11,7 +11,7 @@ class DonationSection extends StatelessWidget {
   final AppLocale locale;
   const DonationSection({super.key, required this.locale});
 
-  static const _providerDomain = 'summit.co.il';
+  static const _providerDomain = 'sumit.co.il';
 
   @override
   Widget build(BuildContext context) {
@@ -226,32 +226,62 @@ class DonationSection extends StatelessWidget {
 
   Future<bool?> _confirmExternalLaunchDialog(BuildContext context, Uri uri) {
     final l = LocaleScope.of(context).value;
+
     final title = t({
       'en': 'Leaving site',
       'ar': 'ستغادر الموقع',
       'he': 'אתם עומדים לצאת מהאתר',
     }, l);
-    final msg = t({
-      'en': 'You are going to $_providerDomain.\nPlease verify the address before paying:\n${uri.toString()}',
-      'ar': 'ستنتقل إلى $_providerDomain.\nيرجى التحقق من العنوان قبل الدفع:\n${uri.toString()}',
-      'he': 'אתם עוברים ל־$_providerDomain.\nאשרו שהכתובת נכונה לפני התשלום:\n${uri.toString()}',
+
+    // Split the message into parts so we can style the domain & URL
+    final goPrefix = t({
+      'en': 'You are going to ',
+      'ar': 'ستنتقل إلى ',
+      'he': 'אתם עוברים ל־',
     }, l);
+
+    final verify = t({
+      'en': 'Please verify the address before paying:',
+      'ar': 'يرجى التحقق من العنوان قبل الدفع:',
+      'he': 'אשרו שהכתובת נכונה לפני התשלום:',
+    }, l);
+
     final cancel = t({'en': 'Cancel', 'ar': 'إلغاء', 'he': 'ביטול'}, l);
     final cont = t({'en': 'Continue', 'ar': 'متابعة', 'he': 'המשך'}, l);
 
     return showDialog<bool>(
       context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text(title),
-        content: SelectableText(
-          msg,
-          style: const TextStyle(fontFamily: 'monospace', height: 1.3),
-        ),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx, false), child: Text(cancel)),
-          FilledButton(onPressed: () => Navigator.pop(ctx, true), child: Text(cont)),
-        ],
-      ),
+      builder: (ctx) {
+        final theme = Theme.of(ctx);
+        final base = theme.textTheme.bodyMedium ?? const TextStyle(fontSize: 14);
+        final urlStyle = base.copyWith(
+          fontFamily: 'monospace', // readable URL
+          fontWeight: FontWeight.w700, // bold the domain
+
+          height: 1.3,
+          fontSize: (base.fontSize ?? 14) + 2, // a bit bigger
+        );
+
+        return AlertDialog(
+          title: Text(title),
+          content: SelectableText.rich(
+            TextSpan(
+              style: base,
+              children: [
+                TextSpan(text: goPrefix),
+                const TextSpan(text: _providerDomain),
+                const TextSpan(text: '.\n'),
+                TextSpan(text: '$verify\n\n'),
+                TextSpan(text: uri.toString(), style: urlStyle),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(onPressed: () => Navigator.pop(ctx, false), child: Text(cancel)),
+            FilledButton(onPressed: () => Navigator.pop(ctx, true), child: Text(cont)),
+          ],
+        );
+      },
     );
   }
 }
