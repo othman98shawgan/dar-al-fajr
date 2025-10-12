@@ -63,8 +63,8 @@ class _LandingPageState extends State<LandingPage> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Section(key: homeKey, child: HomeSection(locale: l)),
-              Section(key: donateKey, child: DonationSection(locale: l)),
               Section(key: aboutKey, child: AboutSection(locale: l)),
+              Section(key: donateKey, child: DonationSection(locale: l)),
               Section(key: photosKey, child: const PhotosSection()),
               Section(key: contactKey, child: ContactSection(locale: l)),
               const SizedBox(height: 48),

@@ -13,6 +13,12 @@ String t(Map<String, String> m, AppLocale locale) {
 /// ===== Brand/config used across the app =====
 class ContentConfig {
   static const brandName = 'Dar al-Fajr';
+  static const brandNameLocalized = {
+    'en': 'Dar al-Fajr',
+    'ar': 'دار الفجر',
+    'he': 'דאר אל-פג׳ר',
+  };
+
   static const brandLogo = 'assets/images/logo.png';
   static const donateUrl = 'https://pay.sumit.co.il/frrouf/i66g0c/c/payment/';
   static const studentPayUrl = 'https://pay.sumit.co.il/frrouf/i66g6b/c/payment/';
@@ -29,25 +35,25 @@ class HomeContent {
   static const hadith = {
     'en': 'The Prophet (PBUH) said:\n"The best of you are those who learn the Qur\'an and teach it."',
     'ar': 'قال رسول الله ﷺ: «خَيْرُكُمْ مَنْ تَعَلَّمَ القُرْآنَ وَعَلَّمَهُ»',
-    'he': 'אמר הנביא (בס״ה): "הטובים בכם הם הלומדים את הקוראן ומלמדים אותו."',
+    'he': 'אמר הנביא ﷺ:\n"הטובים שבכם הם הלומדים את הקוראן ומלמדים אותו."',
   };
 
   static const subtitle = {
     'en': 'Join us in our mission to spread knowledge and understanding of the Qur\'an.',
     'ar': 'انضمّ إلينا في رسالتنا نحو جيل قرآني.',
-    'he': 'הצטרפו אלינו בשליחות להפיץ ידע והבנה של הקוראן.',
+    'he': 'בואו להיות חלק מהמאמץ להפיץ את הידע וההבנה של הקוראן.',
   };
 
   static Map<String, String> statsLabels(AppLocale l) => {
-        'students': t({'en': 'Students', 'ar': 'الطلاب', 'he': 'תלמידים'}, l),
-        'weeklyClasses': t({'en': 'Weekly Classes', 'ar': 'دروس أسبوعية', 'he': 'שיעורים שבועיים'}, l),
-        'volunteers': t({'en': 'Volunteers', 'ar': 'متطوعون', 'he': 'מתנדבים'}, l),
+        'students': t({'en': 'Students', 'ar': 'طالب', 'he': 'תלמידים'}, l),
+        'weeklyClasses': t({'en': 'Weekly Classes', 'ar': 'درس أسبوعي', 'he': 'שיעורים שבועיים'}, l),
+        'volunteers': t({'en': 'Volunteers', 'ar': 'متطوع', 'he': 'מתנדבים'}, l),
         'years': t({'en': 'Years Serving', 'ar': 'سنوات خدمة', 'he': 'שנות פעילות'}, l),
       };
 
   static const statsValues = {
     'students': '110',
-    'weeklyClasses': '25',
+    'weeklyClasses': '50',
     'volunteers': '30',
     'years': '2',
   };
@@ -68,15 +74,15 @@ class AboutContent {
 
   static const description = {
     'en':
-        'Dar al-Fajr is a Quranic education center in Kfar Kama, dedicated to teaching children and youth reading, memorization, and proper recitation of the Qur’an. We run five days a week, with tailored programs from beginners to advanced students, now serving over 110 learners. Our mission is clear: to nurture a generation that loves the Qur’an and lives by its guidance.',
+        'Dar al-Fajr is an Islamic education center in Kfar Kama, dedicated to teaching children and youth the reading, memorization, and proper recitation of the Qur’an. In addition to Qur’an studies, we hold weekly lessons that focus on Islamic values, faith, and character - covering topics such as fiqh, ʿaqīdah, and sīrah. Today, Dar al-Fajr serves over 110 students across multiple levels, from beginners to advanced. Our mission is clear: to nurture a generation that loves the Qur’an, understands its message, and lives by its guidance.',
     'ar':
-        'دار الفجر هو مركز لتعليم القرآن في كفر كما، مكرّس لتعليم الأطفال والشباب قراءة القرآن وحفظه وتجويده. نعمل خمسة أيام في الأسبوع، مع برامج مخصّصة للمبتدئين والمتقدّمين، ونخدم اليوم أكثر من 110 طالبًا. رسالتنا واضحة: تربية جيل يحب القرآن ويعيش بهديه.',
+        'دار الفجر هو مركز تعليمي إسلامي في كفر كما، يُعنى بتعليم الأطفال والناشئة قراءة القرآن الكريم وتجويده وحفظه. إلى جانب دروس القرآن، نقيم دروسًا أسبوعية تُعنى بالقيم الإسلامية والإيمان والأخلاق، وتشمل موضوعات في الفقه والعقيدة والسيرة النبوية. يضم المركز اليوم أكثر من 110 طالبًا وطالبة في مستويات مختلفة، من المبتدئين إلى المتقدمين. ورسالتنا واضحة: تربية جيلٍ يحبّ القرآن، يفهم معانيه ويعيش بهديه.',
     'he':
-        'דר אל-פג׳ר הוא מרכז ללימודי קוראן בכפר כמא, המוקדש להקניית קריאה, שינון וקריאה נכונה לילדים ולנוער. אנו פועלים חמישה ימים בשבוע, עם תוכניות מותאמות לכל הרמות, ומשרתים כיום מעל 110 תלמידים. השליחות שלנו ברורה: לגדל דור שאוהב את הקוראן וחי על פי הדרכתו.',
+        'דאר אל־פג׳ר הוא מרכז חינוך אסלאמי בכפר כמא, שמוקדש ללימוד קריאה, שינון ותגויד של הקוראן לילדים ולנוער. בנוסף ללימודי הקוראן, אנו מקיימים שיעורים שבועיים בנושאים של ערכים אסלאמיים, אמונה ומידות טובות - כגון פִקְה, עַקִידָה וסִירַה. כיום לומדים במרכז למעלה מ־110 תלמידים ותלמידות ברמות שונות - מהמתחילים ועד המתקדמים. החזון שלנו ברור: לטפח דור שאוהב את הקוראן, מבין את משמעותו וחי לאורו.',
   };
 
   static List<String> pillars(AppLocale l) => [
-        t({'en': 'Education', 'ar': 'التعليم', 'he': 'חינוך'}, l),
+        t({'en': 'Education', 'ar': 'تربية', 'he': 'חינוך'}, l),
         t({'en': 'Community', 'ar': 'المجتمع', 'he': 'קהילה'}, l),
         t({'en': 'Service', 'ar': 'الخدمة', 'he': 'שירות'}, l),
       ];
@@ -93,7 +99,7 @@ class DonationContent {
   static const subtitle = {
     'en': 'Every ayah memorized, every letter recited, adds to the reward of those who support this mission.',
     'ar': 'كل آية يحفظها الطالب، وكل حرف يتلوه، يكون في ميزان حسنات من ساهم في دعمه.',
-    'he': 'כל פסוק שנשמר וכל אות שנקראת – נזקפים לזכות מי שתומך בשליחות הזו.',
+    'he': 'כל פסוק שנשנן וכל אות שנקרא – מוסיפים לשכרם של התומכים בדרך הזאת.',
   };
 
   static const cardCta = {
@@ -105,7 +111,7 @@ class DonationContent {
   static const studentCta = {
     'en': 'Student Payment',
     'ar': 'دفع رسوم الطالب',
-    'he': 'תשלום לתלמיד',
+    'he': 'תשלום עבור תלמיד',
   };
 
   static const bankTitle = {
@@ -237,7 +243,7 @@ class Member {
 class NavContent {
   static const home = {'en': 'Home', 'ar': 'الرئيسية', 'he': 'בית'};
   static const about = {'en': 'About', 'ar': 'من نحن', 'he': 'אודות'};
-  static const donate = {'en': 'Support', 'ar': 'تبرّع', 'he': 'תרומה'};
+  static const donate = {'en': 'Support Us', 'ar': 'تبرّع', 'he': 'תרומה'};
   static const photos = {'en': 'Photos', 'ar': 'صور', 'he': 'תמונות'};
   static const contact = {'en': 'Contact', 'ar': 'تواصل', 'he': 'יצירת קשר'};
 }
