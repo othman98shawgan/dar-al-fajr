@@ -51,7 +51,9 @@ class SiteAppBar extends StatelessWidget implements PreferredSizeWidget {
       title: Row(children: [
         SiteLogo(size: isMobile ? 36 : 48),
         const SizedBox(width: 10),
-        if (w >= 380) const Text('Dar al-Fajr', style: TextStyle(fontWeight: FontWeight.w700, color: Brand.green)),
+        if (w >= 380)
+          Text(ContentConfig.brandNameLocalized[locale] ?? ContentConfig.brandName,
+              style: const TextStyle(fontWeight: FontWeight.w700, color: Brand.green)),
       ]),
       actions: isMobile
           ? [

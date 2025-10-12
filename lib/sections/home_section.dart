@@ -32,7 +32,7 @@ class HomeSection extends StatelessWidget {
         ?.copyWith(height: 1.25);
 
     final gridCount = isMobile ? 2 : 4;
-    final valueBoxWidth = isMobile ? 64.0 : 72.0; // fixed width for animated number
+    final valueBoxWidth = isMobile ? 80.0 : 96.0; // fixed width for animated number
 
     return Column(
       children: [
@@ -65,9 +65,18 @@ class HomeSection extends StatelessWidget {
             childAspectRatio: isMobile ? 1.6 : 1.9,
           ),
           children: [
-            _StatCard(label: labels['students']!, value: values['students']!, valueBoxWidth: valueBoxWidth),
-            _StatCard(label: labels['weeklyClasses']!, value: values['weeklyClasses']!, valueBoxWidth: valueBoxWidth),
-            _StatCard(label: labels['volunteers']!, value: values['volunteers']!, valueBoxWidth: valueBoxWidth),
+            _StatCard(
+                label: labels['students']!, value: values['students']!, valueBoxWidth: valueBoxWidth, forcePlus: true),
+            _StatCard(
+                label: labels['weeklyClasses']!,
+                value: values['weeklyClasses']!,
+                valueBoxWidth: valueBoxWidth,
+                forcePlus: true),
+            _StatCard(
+                label: labels['volunteers']!,
+                value: values['volunteers']!,
+                valueBoxWidth: valueBoxWidth,
+                forcePlus: true),
             _StatCard(label: labels['years']!, value: values['years']!, valueBoxWidth: valueBoxWidth),
           ],
         ),
@@ -80,16 +89,20 @@ class HomeSection extends StatelessWidget {
 class _StatCard extends StatelessWidget {
   final String label, value;
   final double valueBoxWidth;
+  final bool forcePlus;
+
   const _StatCard({
     required this.label,
     required this.value,
     required this.valueBoxWidth,
+    this.forcePlus = false, // default off
   });
 
   @override
   Widget build(BuildContext context) {
     final target = _parseInt(value);
-    final suffix = _suffixOf(value);
+    final baseSuffix = _suffixOf(value);
+    final suffix = forcePlus ? (baseSuffix.contains('+') ? baseSuffix : '$baseSuffix+') : baseSuffix;
 
     final valueStyle = Theme.of(context).textTheme.headlineMedium?.copyWith(
       fontWeight: FontWeight.w700,
@@ -100,23 +113,25 @@ class _StatCard extends StatelessWidget {
     return Card(
       elevation: 0.5,
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16), // comfy taps on mobile
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             SizedBox(
-              width: valueBoxWidth, // fixed width from before
+              width: valueBoxWidth,
               child: TweenAnimationBuilder<double>(
                 tween: Tween(begin: 0, end: target.toDouble()),
-                duration: const Duration(milliseconds: 3000), // ⬅️ longer (2s instead of 1.1s)
-                curve: Curves.easeOutQuart, // ⬅️ smoother easing
+                duration: const Duration(milliseconds: 3000),
+                curve: Curves.easeOutQuart,
                 builder: (_, v, __) {
-                  final shown = v.floor().toString(); // floor avoids jitter on last frames
+                  final shown = v.floor().toString();
                   return Text(
                     '$shown$suffix',
                     textAlign: TextAlign.center,
                     style: valueStyle,
+                    maxLines: 1,
+                    softWrap: false,
                   );
                 },
               ),

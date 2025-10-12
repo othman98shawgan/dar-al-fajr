@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+
 import '../i18n/locale_scope.dart';
 import '../theme/brand.dart';
 import '../content/site_content.dart';
@@ -90,18 +92,37 @@ class _AboutTextBlock extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Clamp paragraph width for readability on big screens
+    final l = LocaleScope.of(context).value;
+    final isArabic = l == 'ar';
+
+    final base = Theme.of(context).textTheme;
+
+    final titleStyle = isArabic
+        ? GoogleFonts.cairo(
+            textStyle: base.headlineMedium,
+            letterSpacing: 0,
+          )
+        : base.headlineMedium;
+
+    final bodyStyle = isArabic
+        ? GoogleFonts.cairo(
+            textStyle: base.bodyLarge,
+            letterSpacing: 0,
+            height: 1.6, // comfy line-height for Arabic
+          )
+        : base.bodyLarge;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(title, style: Theme.of(context).textTheme.headlineMedium),
+        Text(title, style: titleStyle),
         const SizedBox(height: 12),
         ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 640),
-          child: SelectableText(body, style: Theme.of(context).textTheme.bodyLarge),
+          child: SelectableText(body, style: bodyStyle),
         ),
-        const SizedBox(height: 16),
-        Wrap(spacing: 12, runSpacing: 12, children: chips),
+        // const SizedBox(height: 16),
+        // Wrap(spacing: 12, runSpacing: 12, children: chips),
       ],
     );
   }
