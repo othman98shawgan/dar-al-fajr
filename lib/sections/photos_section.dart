@@ -1,6 +1,9 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+
+import '../content/site_content.dart';
 import '../theme/brand.dart';
+import '../widgets/zoom_gallery.dart';
 
 class PhotosSection extends StatefulWidget {
   const PhotosSection({super.key});
@@ -13,17 +16,17 @@ class _PhotosSectionState extends State<PhotosSection> {
   Timer? _timer;
   int _currentIndex = 0;
   double _viewportFraction = 0.85;
+  late final List<ImageProvider> _providers;
 
-  final images = List.generate(
-    10,
-    (i) => 'assets/images/image-${(i + 1).toString().padLeft(2, '0')}.jpg',
-  );
+  List<String> get images => PhotosContent.images;
 
   @override
   void initState() {
     super.initState();
     _ctrl = PageController(viewportFraction: _viewportFraction);
     _startTimer();
+
+    _providers = images.map((p) => AssetImage(p) as ImageProvider).toList();
   }
 
   void _startTimer() {
@@ -96,10 +99,15 @@ class _PhotosSectionState extends State<PhotosSection> {
                   padding: const EdgeInsets.symmetric(horizontal: 8.0),
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(16),
-                    child: Image.asset(
-                      images[i],
-                      fit: BoxFit.cover,
-                      filterQuality: FilterQuality.high,
+                    child: ZoomableTap(
+                      heroTagBase: 'gallery', // optional; enables Hero transition
+                      initialIndex: i,
+                      providers: _providers,
+                      child: Image.asset(
+                        images[i],
+                        fit: BoxFit.cover,
+                        filterQuality: FilterQuality.high,
+                      ),
                     ),
                   ),
                 ),

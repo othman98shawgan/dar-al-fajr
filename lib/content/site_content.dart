@@ -172,7 +172,6 @@ class PhotosContent {
     'assets/images/image-07.jpg',
     'assets/images/image-08.jpg',
     'assets/images/image-09.jpg',
-    'assets/images/image-10.jpg',
   ];
 }
 
