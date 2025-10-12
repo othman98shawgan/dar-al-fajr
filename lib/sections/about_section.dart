@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../i18n/locale_scope.dart';
 import '../theme/brand.dart';
 import '../content/site_content.dart';
+import '../widgets/zoom_gallery.dart';
 
 class AboutSection extends StatelessWidget {
   final AppLocale locale;
@@ -17,22 +18,31 @@ class AboutSection extends StatelessWidget {
     final title = t(AboutContent.title, locale);
     final body = t(AboutContent.description, locale);
     final pillars = AboutContent.pillars(locale);
+    const imagePath = 'assets/images/image-10.jpg';
 
-    final photoCore = ClipRRect(
+    final photoThumb = ClipRRect(
       borderRadius: BorderRadius.circular(12),
       child: Image.asset(
-        'assets/images/image-10.jpg',
+        imagePath,
         fit: BoxFit.cover,
         filterQuality: FilterQuality.high,
         semanticLabel: 'Dar al-Fajr photo',
       ),
     );
 
+// Use ZoomableTap with a single image provider
+    final photoZoomable = ZoomableTap(
+      heroTagBase: 'about-photo', // optional hero
+      initialIndex: 0,
+      providers: [AssetImage(imagePath)],
+      child: photoThumb,
+    );
+
     // Desktop/tablet: add a soft shadow; Mobile: keep it flat (faster, lighter)
     final photo = AspectRatio(
       aspectRatio: 16 / 9,
       child: isMobile
-          ? photoCore
+          ? photoZoomable
           : DecoratedBox(
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(12),
@@ -45,10 +55,9 @@ class AboutSection extends StatelessWidget {
                   ),
                 ],
               ),
-              child: photoCore,
+              child: photoZoomable,
             ),
     );
-
     final textBlock = _AboutTextBlock(
       title: title,
       body: body,
