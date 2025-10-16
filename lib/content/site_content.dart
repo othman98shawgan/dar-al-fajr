@@ -52,7 +52,7 @@ class HomeContent {
       };
 
   static const statsValues = {
-    'students': '110',
+    'students': '100',
     'weeklyClasses': '50',
     'volunteers': '30',
     'years': '2',
@@ -74,11 +74,11 @@ class AboutContent {
 
   static const description = {
     'en':
-        'Dar al-Fajr is an Islamic education center in Kfar Kama, dedicated to teaching children and youth the reading, memorization, and proper recitation of the Qur’an. In addition to Qur’an studies, we hold weekly lessons that focus on Islamic values, faith, and character - covering topics such as fiqh, ʿaqīdah, and sīrah. Today, Dar al-Fajr serves over 110 students across multiple levels, from beginners to advanced. Our mission is clear: to nurture a generation that loves the Qur’an, understands its message, and lives by its guidance.',
+        'Dar al-Fajr is an Islamic education center in Kfar Kama, dedicated to teaching children and youth the reading, memorization, and proper recitation of the Qur’an. In addition to Qur’an studies, we hold weekly lessons that focus on Islamic values, faith, and character - covering topics such as fiqh, ʿaqīdah, and sīrah. Today, Dar al-Fajr serves over 100 students across multiple levels, from beginners to advanced. Our mission is clear: to nurture a generation that loves the Qur’an, understands its message, and lives by its guidance.',
     'ar':
-        'دار الفجر هو مركز تعليمي إسلامي في كفر كما، يُعنى بتعليم الأطفال والناشئة قراءة القرآن الكريم وتجويده وحفظه. إلى جانب دروس القرآن، نقيم دروسًا أسبوعية تُعنى بالقيم الإسلامية والإيمان والأخلاق، وتشمل موضوعات في الفقه والعقيدة والسيرة النبوية. يضم المركز اليوم أكثر من 110 طالبًا وطالبة في مستويات مختلفة، من المبتدئين إلى المتقدمين. ورسالتنا واضحة: تربية جيلٍ يحبّ القرآن، يفهم معانيه ويعيش بهديه.',
+        'دار الفجر هو مركز تعليمي إسلامي في كفر كما، يُعنى بتعليم الأطفال والناشئة قراءة القرآن الكريم وتجويده وحفظه. إلى جانب دروس القرآن، نقيم دروسًا أسبوعية تُعنى بالقيم الإسلامية والإيمان والأخلاق، وتشمل موضوعات في الفقه والعقيدة والسيرة النبوية. يضم المركز اليوم أكثر من 100 طالبًا وطالبة في مستويات مختلفة، من المبتدئين إلى المتقدمين. ورسالتنا واضحة: تربية جيلٍ يحبّ القرآن، يفهم معانيه ويعيش بهديه.',
     'he':
-        'דאר אל־פג׳ר הוא מרכז חינוך אסלאמי בכפר כמא, שמוקדש ללימוד קריאה, שינון ותגויד של הקוראן לילדים ולנוער. בנוסף ללימודי הקוראן, אנו מקיימים שיעורים שבועיים בנושאים של ערכים אסלאמיים, אמונה ומידות טובות - כגון פִקְה, עַקִידָה וסִירַה. כיום לומדים במרכז למעלה מ־110 תלמידים ותלמידות ברמות שונות - מהמתחילים ועד המתקדמים. החזון שלנו ברור: לטפח דור שאוהב את הקוראן, מבין את משמעותו וחי לאורו.',
+        'דאר אל־פג׳ר הוא מרכז חינוך אסלאמי בכפר כמא, שמוקדש ללימוד קריאה, שינון ותגויד של הקוראן לילדים ולנוער. בנוסף ללימודי הקוראן, אנו מקיימים שיעורים שבועיים בנושאים של ערכים אסלאמיים, אמונה ומידות טובות - כגון פִקְה, עַקִידָה וסִירַה. כיום לומדים במרכז למעלה מ־100 תלמידים ותלמידות ברמות שונות - מהמתחילים ועד המתקדמים. החזון שלנו ברור: לטפח דור שאוהב את הקוראן, מבין את משמעותו וחי לאורו.',
   };
 
   static List<String> pillars(AppLocale l) => [
@@ -162,17 +162,16 @@ class BankDetails {
 /// ===== Photos section (paths only; text is minimal) =====
 class PhotosContent {
   // If you want to use this instead of PageView’s generator, list your real assets:
-  static const images = <String>[
-    'assets/images/image-01.jpg',
-    'assets/images/image-02.jpg',
-    'assets/images/image-03.jpg',
-    'assets/images/image-04.jpg',
-    'assets/images/image-05.jpg',
-    'assets/images/image-06.jpg',
-    'assets/images/image-07.jpg',
-    'assets/images/image-08.jpg',
-    'assets/images/image-09.jpg',
-  ];
+  static const _count = 23;
+  static const _dir = 'assets/images';
+  static const _prefix = 'image-';
+  static const _ext = '.jpg';
+
+  static final List<String> images = List.generate(
+    _count,
+    (i) => '$_dir/$_prefix${(i + 1).toString().padLeft(2, '0')}$_ext',
+    growable: false,
+  );
 }
 
 /// ===== Contact section =====
@@ -242,7 +241,7 @@ class Member {
 class NavContent {
   static const home = {'en': 'Home', 'ar': 'الرئيسية', 'he': 'בית'};
   static const about = {'en': 'About', 'ar': 'من نحن', 'he': 'אודות'};
-  static const donate = {'en': 'Support Us', 'ar': 'تبرّع', 'he': 'תרומה'};
+  static const donate = {'en': 'Donate', 'ar': 'تبرّع', 'he': 'תרומה'};
   static const photos = {'en': 'Photos', 'ar': 'صور', 'he': 'תמונות'};
   static const contact = {'en': 'Contact', 'ar': 'تواصل', 'he': 'יצירת קשר'};
 }

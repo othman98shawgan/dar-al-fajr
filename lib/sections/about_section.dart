@@ -18,7 +18,7 @@ class AboutSection extends StatelessWidget {
     final title = t(AboutContent.title, locale);
     final body = t(AboutContent.description, locale);
     final pillars = AboutContent.pillars(locale);
-    const imagePath = 'assets/images/image-10.jpg';
+    const imagePath = 'assets/images/image-00.jpg';
 
     final photoThumb = ClipRRect(
       borderRadius: BorderRadius.circular(12),

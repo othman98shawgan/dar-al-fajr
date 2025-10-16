@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../content/site_content.dart';
 import '../theme/brand.dart';
@@ -25,7 +26,6 @@ class _PhotosSectionState extends State<PhotosSection> {
     super.initState();
     _ctrl = PageController(viewportFraction: _viewportFraction);
     _startTimer();
-
     _providers = images.map((p) => AssetImage(p) as ImageProvider).toList();
   }
 
@@ -41,6 +41,24 @@ class _PhotosSectionState extends State<PhotosSection> {
       );
     });
   }
+
+  void _restartTimer() {
+    _timer?.cancel();
+    _startTimer();
+  }
+
+  Future<void> _goAbs(int index) async {
+    if (!_ctrl.hasClients || images.isEmpty) return;
+    final clamped = index.clamp(0, images.length - 1);
+    _restartTimer();
+    await _ctrl.animateToPage(
+      clamped,
+      duration: const Duration(milliseconds: 400),
+      curve: Curves.easeOut,
+    );
+  }
+
+  Future<void> _goRel(int delta) => _goAbs(_currentIndex + delta);
 
   @override
   void dispose() {
@@ -63,6 +81,10 @@ class _PhotosSectionState extends State<PhotosSection> {
     setState(() {});
   }
 
+  // Custom intents for arrow keys
+  static final _leftActivator = SingleActivator(LogicalKeyboardKey.arrowLeft);
+  static final _rightActivator = SingleActivator(LogicalKeyboardKey.arrowRight);
+
   @override
   Widget build(BuildContext context) {
     final w = MediaQuery.sizeOf(context).width;
@@ -74,45 +96,99 @@ class _PhotosSectionState extends State<PhotosSection> {
     // Height adaptive
     final double height = isMobile ? 300 : 480;
 
+    return Focus(
+      autofocus: true,
+      child: Shortcuts(
+        shortcuts: <ShortcutActivator, Intent>{
+          _leftActivator: const _ArrowLeftIntent(),
+          _rightActivator: const _ArrowRightIntent(),
+        },
+        child: Actions(
+          actions: <Type, Action<Intent>>{
+            _ArrowLeftIntent: CallbackAction<_ArrowLeftIntent>(
+              onInvoke: (_) {
+                _goRel(-1);
+                return null;
+              },
+            ),
+            _ArrowRightIntent: CallbackAction<_ArrowRightIntent>(
+              onInvoke: (_) {
+                _goRel(1);
+                return null;
+              },
+            ),
+          },
+          child: _buildGallery(height, isMobile),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildGallery(double height, bool isMobile) {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
         SizedBox(
           height: height,
-          child: PageView.builder(
-            controller: _ctrl,
-            itemCount: images.length,
-            onPageChanged: (i) => setState(() => _currentIndex = i),
-            itemBuilder: (context, i) {
-              return AnimatedBuilder(
-                animation: _ctrl,
-                builder: (context, child) {
-                  double scale = 1.0;
-                  if (_ctrl.position.haveDimensions) {
-                    final page = _ctrl.page ?? _ctrl.initialPage.toDouble();
-                    final diff = (page - i).abs();
-                    scale = (1 - (diff * 0.1)).clamp(0.9, 1.0);
-                  }
-                  return Transform.scale(scale: scale, child: child);
-                },
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(16),
-                    child: ZoomableTap(
-                      heroTagBase: 'gallery', // optional; enables Hero transition
-                      initialIndex: i,
-                      providers: _providers,
-                      child: Image.asset(
-                        images[i],
-                        fit: BoxFit.cover,
-                        filterQuality: FilterQuality.high,
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              PageView.builder(
+                controller: _ctrl,
+                itemCount: images.length,
+                onPageChanged: (i) => setState(() => _currentIndex = i),
+                itemBuilder: (context, i) {
+                  return AnimatedBuilder(
+                    animation: _ctrl,
+                    builder: (context, child) {
+                      double scale = 1.0;
+                      if (_ctrl.position.haveDimensions) {
+                        final page = _ctrl.page ?? _ctrl.initialPage.toDouble();
+                        final diff = (page - i).abs();
+                        scale = (1 - (diff * 0.1)).clamp(0.9, 1.0);
+                      }
+                      return Transform.scale(scale: scale, child: child);
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(16),
+                        child: ZoomableTap(
+                          heroTagBase: 'gallery', // keeps your hero transition
+                          initialIndex: i,
+                          providers: _providers,
+                          child: Image.asset(
+                            images[i],
+                            fit: BoxFit.cover,
+                            filterQuality: FilterQuality.high,
+                          ),
+                        ),
                       ),
                     ),
+                  );
+                },
+              ),
+
+              // ← Arrow
+              if (images.length > 1)
+                Positioned(
+                  left: 8,
+                  child: _NavButton(
+                    icon: Icons.chevron_left,
+                    onTap: () => _goRel(-1),
                   ),
                 ),
-              );
-            },
+
+              // → Arrow
+              if (images.length > 1)
+                Positioned(
+                  right: 8,
+                  child: _NavButton(
+                    icon: Icons.chevron_right,
+                    onTap: () => _goRel(1),
+                  ),
+                ),
+            ],
           ),
         ),
         const SizedBox(height: 12),
@@ -121,18 +197,53 @@ class _PhotosSectionState extends State<PhotosSection> {
           spacing: 6,
           children: List.generate(images.length, (i) {
             final active = i == _currentIndex;
-            return AnimatedContainer(
-              duration: const Duration(milliseconds: 300),
-              width: active ? 16 : 8,
-              height: 8,
-              decoration: BoxDecoration(
-                color: active ? Brand.green : Colors.grey[400],
-                borderRadius: BorderRadius.circular(4),
+            return InkWell(
+              borderRadius: BorderRadius.circular(4),
+              onTap: () => _goAbs(i),
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 300),
+                width: active ? 16 : 8,
+                height: 8,
+                decoration: BoxDecoration(
+                  color: active ? Brand.green : Colors.grey[400],
+                  borderRadius: BorderRadius.circular(4),
+                ),
               ),
             );
           }),
         ),
       ],
+    );
+  }
+}
+
+// ---- support types ----
+class _ArrowLeftIntent extends Intent {
+  const _ArrowLeftIntent();
+}
+
+class _ArrowRightIntent extends Intent {
+  const _ArrowRightIntent();
+}
+
+class _NavButton extends StatelessWidget {
+  final IconData icon;
+  final VoidCallback onTap;
+  const _NavButton({required this.icon, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.black.withOpacity(0.25),
+      borderRadius: BorderRadius.circular(999),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(999),
+        child: Padding(
+          padding: const EdgeInsets.all(6.0),
+          child: Icon(icon, size: 28, color: Colors.white),
+        ),
+      ),
     );
   }
 }
