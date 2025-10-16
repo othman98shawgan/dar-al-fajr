@@ -86,7 +86,7 @@ class DonationSection extends StatelessWidget {
                       textStyle: ctaTextStyle,
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                     ),
-                    onPressed: donateUrl.isEmpty ? null : () => _safeLaunch(context, donateUrl),
+                    onPressed: donateUrl.isEmpty ? null : () => _launchExternal(donateUrl),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -115,7 +115,7 @@ class DonationSection extends StatelessWidget {
                       textStyle: ctaTextStyle,
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                     ),
-                    onPressed: studentUrl.isEmpty ? null : () => _safeLaunch(context, studentUrl),
+                    onPressed: studentUrl.isEmpty ? null : () => _launchExternal(studentUrl),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -197,92 +197,14 @@ class DonationSection extends StatelessWidget {
     );
   }
 
-  /// Safety wrapper: confirm & verify the domain before launching.
-  Future<void> _safeLaunch(BuildContext context, String url) async {
+  Future<void> _launchExternal(String url) async {
     final uri = Uri.tryParse(url);
-    if (uri == null) return;
-    final host = uri.host.toLowerCase();
-    final trusted = host == _providerDomain || host.endsWith('.$_providerDomain');
-
-    if (!trusted) {
-      await showDialog<void>(
-        context: context,
-        builder: (ctx) => AlertDialog(
-          title: const Text('Unsafe link'),
-          content: Text('This link points to:\n$host\n\nExpected domain: $_providerDomain'),
-          actions: [
-            TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Close')),
-          ],
-        ),
-      );
-      return;
+    if (uri == null) return; // bad URL? silently ignore like before (buttons already guard empty)
+    final ok = await launchUrl(uri, mode: LaunchMode.externalApplication);
+    if (!ok) {
+      // optional: surface failure without the old dialogs
+      debugPrint('Failed to launch $uri');
     }
-
-    final proceed = await _confirmExternalLaunchDialog(context, uri);
-    if (proceed != true) return;
-
-    await launchUrl(uri, mode: LaunchMode.externalApplication);
-  }
-
-  Future<bool?> _confirmExternalLaunchDialog(BuildContext context, Uri uri) {
-    final l = LocaleScope.of(context).value;
-
-    final title = t({
-      'en': 'Leaving site',
-      'ar': 'ستغادر الموقع',
-      'he': 'אתם עומדים לצאת מהאתר',
-    }, l);
-
-    // Split the message into parts so we can style the domain & URL
-    final goPrefix = t({
-      'en': 'You are going to ',
-      'ar': 'ستنتقل إلى ',
-      'he': 'אתם עוברים ל־',
-    }, l);
-
-    final verify = t({
-      'en': 'Please verify the address before paying:',
-      'ar': 'يرجى التحقق من العنوان قبل الدفع:',
-      'he': 'אשרו שהכתובת נכונה לפני התשלום:',
-    }, l);
-
-    final cancel = t({'en': 'Cancel', 'ar': 'إلغاء', 'he': 'ביטול'}, l);
-    final cont = t({'en': 'Continue', 'ar': 'متابعة', 'he': 'המשך'}, l);
-
-    return showDialog<bool>(
-      context: context,
-      builder: (ctx) {
-        final theme = Theme.of(ctx);
-        final base = theme.textTheme.bodyMedium ?? const TextStyle(fontSize: 14);
-        final urlStyle = base.copyWith(
-          fontFamily: 'monospace', // readable URL
-          fontWeight: FontWeight.w700, // bold the domain
-
-          height: 1.3,
-          fontSize: (base.fontSize ?? 14) + 2, // a bit bigger
-        );
-
-        return AlertDialog(
-          title: Text(title),
-          content: SelectableText.rich(
-            TextSpan(
-              style: base,
-              children: [
-                TextSpan(text: goPrefix),
-                const TextSpan(text: _providerDomain),
-                const TextSpan(text: '.\n'),
-                TextSpan(text: '$verify\n\n'),
-                TextSpan(text: uri.toString(), style: urlStyle),
-              ],
-            ),
-          ),
-          actions: [
-            TextButton(onPressed: () => Navigator.pop(ctx, false), child: Text(cancel)),
-            FilledButton(onPressed: () => Navigator.pop(ctx, true), child: Text(cont)),
-          ],
-        );
-      },
-    );
   }
 }
 
