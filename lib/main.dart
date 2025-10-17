@@ -23,30 +23,22 @@ class DarAlFajrApp extends StatelessWidget {
       displayColor: Brand.green,
     );
 
-    final localeCode = LocaleScope.of(context).value; // 'en' | 'ar' | 'he'
+    final controller = LocaleScope.of(context);
+    final localeCode = controller.value; // 'en' | 'ar' | 'he'
 
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Dar al-Fajr',
-
-      // Tell Flutter which locale we’re using (drives RTL, formats, etc.)
       locale: Locale(localeCode),
-      supportedLocales: const [
-        Locale('en'),
-        Locale('ar'),
-        Locale('he'),
-      ],
+      supportedLocales: const [Locale('en'), Locale('ar'), Locale('he')],
       localizationsDelegates: const [
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
-
       theme: base.copyWith(
         textTheme: textTheme,
         scaffoldBackgroundColor: Brand.bg,
-
-        // Keep your explicit ColorScheme (fine), but surfaces will come from themes below.
         colorScheme: const ColorScheme(
           brightness: Brightness.light,
           primary: Brand.green,
@@ -58,7 +50,6 @@ class DarAlFajrApp extends StatelessWidget {
           error: Colors.red,
           onError: Colors.white,
         ),
-
         appBarTheme: const AppBarTheme(
           backgroundColor: Brand.nav,
           foregroundColor: Brand.green,
@@ -71,12 +62,8 @@ class DarAlFajrApp extends StatelessWidget {
             fontWeight: FontWeight.w700,
             fontSize: 18,
           ),
-          // crisp bottom hairline instead of drop shadow
-          shape: Border(
-            bottom: BorderSide(color: Brand.outline, width: 1),
-          ),
+          shape: Border(bottom: BorderSide(color: Brand.outline, width: 1)),
         ),
-
         cardTheme: const CardTheme(
           color: Brand.card,
           elevation: 0,
@@ -87,23 +74,16 @@ class DarAlFajrApp extends StatelessWidget {
             side: BorderSide(color: Brand.outline),
           ),
         ),
-
-        dividerTheme: const DividerThemeData(
-          color: Brand.outline,
-          thickness: 1,
-          space: 1,
-        ),
-
+        dividerTheme: const DividerThemeData(color: Brand.outline, thickness: 1, space: 1),
         filledButtonTheme: FilledButtonThemeData(
           style: FilledButton.styleFrom(
             backgroundColor: Brand.yellow,
-            foregroundColor: Brand.text, // higher-contrast label on yellow
+            foregroundColor: Brand.text,
             textStyle: const TextStyle(fontWeight: FontWeight.w700),
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           ),
         ),
-
         outlinedButtonTheme: OutlinedButtonThemeData(
           style: OutlinedButton.styleFrom(
             foregroundColor: Brand.green,
@@ -113,8 +93,8 @@ class DarAlFajrApp extends StatelessWidget {
           ),
         ),
       ),
-
-      home: const LandingPage(),
+      // Show nothing (or a tiny splash) until locale is loaded to avoid flicker
+      home: controller.isLoaded ? const LandingPage() : const SizedBox.shrink(),
     );
   }
 }

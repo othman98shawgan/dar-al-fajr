@@ -1,8 +1,11 @@
+// lib/i18n/locale_scope.dart
+// ignore_for_file: avoid_web_libraries_in_flutter
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:html' as html;
 
-/// AppLocale is just a short code. Keep it simple.
+/// AppLocale is just a short code.
 typedef AppLocale = String; // 'en' | 'ar' | 'he'
 
 const _kPrefKey = 'app_locale';
@@ -18,8 +21,52 @@ AppLocale _normalize(AppLocale? raw, {AppLocale fallback = 'en'}) {
   return _supportedLocales.contains(short) ? short : fallback;
 }
 
+/// --- Web helpers: read/patch URL path for locale ---
+String? _pathLocaleWeb() {
+  if (!kIsWeb) return null;
+  final segs = Uri.base.pathSegments;
+  if (segs.isEmpty) return null;
+  final first = segs.first.trim().toLowerCase();
+  return _supportedLocales.contains(first) ? first : null;
+}
+
+void _rewriteUrlWithLocaleWeb(AppLocale locale) {
+  if (!kIsWeb) return;
+  final current = Uri.base;
+  final segs = List<String>.from(current.pathSegments);
+
+  if (segs.isEmpty) {
+    // No path -> add locale
+    final newUri = Uri(
+      path: '/$locale',
+      queryParameters: current.queryParameters.isEmpty ? null : current.queryParameters,
+      fragment: current.fragment.isEmpty ? null : current.fragment,
+    );
+    html.window.history.replaceState(null, '', newUri.toString());
+    return;
+  }
+
+  if (_supportedLocales.contains(segs.first.toLowerCase())) {
+    // Replace existing locale seg
+    segs[0] = locale;
+  } else {
+    // Prefix with locale
+    segs.insert(0, locale);
+  }
+
+  // Normalize double slashes and trailing
+  final newPath = '/${segs.join('/')}'.replaceAll(RegExp(r'//+'), '/');
+  final newUri = Uri(
+    path: newPath,
+    queryParameters: current.queryParameters.isEmpty ? null : current.queryParameters,
+    fragment: current.fragment.isEmpty ? null : current.fragment,
+  );
+  html.window.history.replaceState(null, '', newUri.toString());
+}
+
 /// Controls and persists the current locale.
 /// Call `value = 'ar'` to switch; listeners rebuild.
+/// On web, the URL will be rewritten to include the locale in the first path segment.
 class LocaleController extends ChangeNotifier {
   AppLocale _value;
   bool _loaded = false;
@@ -36,28 +83,58 @@ class LocaleController extends ChangeNotifier {
     _value = next;
     notifyListeners();
     _save();
+    if (kIsWeb) {
+      _rewriteUrlWithLocaleWeb(_value); // keep URL canonical
+    }
   }
 
-  /// First load: URL ?lang= overrides prefs (web), else prefs, else initial.
+  /// First load priority:
+  /// 1) Web path `/:locale/...`
+  /// 2) Web query `?lang=xx`
+  /// 3) Saved prefs
+  /// 4) Initial (constructor) value
+  ///
+  /// If no locale in path, we rewrite URL to include the chosen one (web).
   Future<void> _bootstrap() async {
-    AppLocale? fromUrl;
-    if (kIsWeb) {
-      final code = Uri.base.queryParameters['lang'];
-      if (code != null && code.isNotEmpty) fromUrl = _normalize(code);
+    AppLocale? chosen;
+
+    // 1) URL path (/:locale/...)
+    final fromPath = _pathLocaleWeb();
+    if (fromPath != null) {
+      chosen = _normalize(fromPath);
+    } else {
+      // 2) Query param ?lang=xx (web only)
+      AppLocale? fromUrl;
+      if (kIsWeb) {
+        final code = Uri.base.queryParameters['lang'];
+        if (code != null && code.isNotEmpty) fromUrl = _normalize(code);
+      }
+
+      // 3) Shared prefs
+      final sp = await SharedPreferences.getInstance();
+      final fromPrefs = sp.getString(_kPrefKey);
+
+      chosen = fromUrl ?? fromPrefs ?? _value; // fall back to initial
     }
 
-    final sp = await SharedPreferences.getInstance();
-    final fromPrefs = sp.getString(_kPrefKey);
+    // Apply if different
+    final normalized = _normalize(chosen, fallback: _value);
+    final changed = normalized != _value;
+    _value = normalized;
 
-    final picked = fromUrl ?? fromPrefs;
-    if (picked != null) {
-      final n = _normalize(picked, fallback: _value);
-      if (n != _value) {
-        _value = n;
-        notifyListeners();
+    // Persist and URL-rewrite if needed
+    if (kIsWeb) {
+      // Ensure URL carries the locale in first path segment
+      final hasPathLocale = _pathLocaleWeb() != null;
+      if (!hasPathLocale || changed) {
+        _rewriteUrlWithLocaleWeb(_value);
       }
     }
+
+    if (changed) notifyListeners();
     _loaded = true;
+    // Also save chosen locale
+    _save();
   }
 
   Future<void> _save() async {
