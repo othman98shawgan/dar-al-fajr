@@ -39,6 +39,16 @@ class _LandingPageState extends State<LandingPage> {
   bool _isRtl(AppLocale l) => l == 'ar' || l == 'he';
 
   @override
+  void initState() {
+    super.initState();
+    // Precaches during the first microtask/frame
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      precacheImage(const AssetImage('assets/images/logo.png'), context);
+      precacheImage(const AssetImage('assets/images/image-00.jpg'), context); // <- change to your real file
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     final l = LocaleScope.of(context).value;
 

@@ -15,7 +15,7 @@ dependencies:
   cupertino_icons: ^1.0.6
   carousel_slider: ^5.1.1
   url_launcher: ^6.3.1
-  web: ^0.5.1
+  web: ^1.0.0
   visibility_detector: ^0.4.0+2
   font_awesome_flutter: ^10.8.0
   google_fonts: ^6.3.2
@@ -23,6 +23,7 @@ dependencies:
   photo_view: ^0.15.0
   flutter_localizations:
     sdk: flutter
+  js_interop: ^0.0.1
 
 dev_dependencies:
   flutter_test:
@@ -35,3 +36,28 @@ flutter:
   
   assets:
     - assets/images/
+
+  fonts:
+    - family: Inter
+      fonts:
+        - asset: assets/fonts/Inter/Inter-Regular.ttf
+        - asset: assets/fonts/Inter/Inter-SemiBold.ttf
+          weight: 600
+        - asset: assets/fonts/Inter/Inter-Bold.ttf
+          weight: 700
+
+    - family: Cairo
+      fonts:
+        - asset: assets/fonts/Cairo/Cairo-Regular.ttf
+        - asset: assets/fonts/Cairo/Cairo-SemiBold.ttf
+          weight: 600
+        - asset: assets/fonts/Cairo/Cairo-Bold.ttf
+          weight: 700
+
+    - family: Heebo
+      fonts:
+        - asset: assets/fonts/Heebo/Heebo-Regular.ttf
+        - asset: assets/fonts/Heebo/Heebo-SemiBold.ttf
+          weight: 600
+        - asset: assets/fonts/Heebo/Heebo-Bold.ttf
+          weight: 700

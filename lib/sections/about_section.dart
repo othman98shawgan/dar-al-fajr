@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 import '../i18n/locale_scope.dart';
 import '../theme/brand.dart';
@@ -101,25 +100,21 @@ class _AboutTextBlock extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final l = LocaleScope.of(context).value;
+    final l = LocaleScope.of(context).value; // 'en' | 'ar' | 'he'
     final isArabic = l == 'ar';
 
-    final base = Theme.of(context).textTheme;
+    final tt = Theme.of(context).textTheme;
 
+// sensible fallbacks if any is null
+    final titleBase = tt.headlineMedium ?? tt.titleLarge ?? const TextStyle();
+    final bodyBase = tt.bodyLarge ?? tt.bodyMedium ?? const TextStyle();
+
+// For Arabic we usually avoid extra letterSpacing and use a bit more line-height
     final titleStyle = isArabic
-        ? GoogleFonts.cairo(
-            textStyle: base.headlineMedium,
-            letterSpacing: 0,
-          )
-        : base.headlineMedium;
+        ? titleBase.copyWith(letterSpacing: 0) // family already = Cairo via Theme
+        : titleBase;
 
-    final bodyStyle = isArabic
-        ? GoogleFonts.cairo(
-            textStyle: base.bodyLarge,
-            letterSpacing: 0,
-            height: 1.6, // comfy line-height for Arabic
-          )
-        : base.bodyLarge;
+    final bodyStyle = isArabic ? bodyBase.copyWith(letterSpacing: 0, height: 1.6) : bodyBase;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
