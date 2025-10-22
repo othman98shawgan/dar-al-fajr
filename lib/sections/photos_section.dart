@@ -81,10 +81,6 @@ class _PhotosSectionState extends State<PhotosSection> {
     setState(() {});
   }
 
-  // Custom intents for arrow keys
-  static final _leftActivator = SingleActivator(LogicalKeyboardKey.arrowLeft);
-  static final _rightActivator = SingleActivator(LogicalKeyboardKey.arrowRight);
-
   @override
   Widget build(BuildContext context) {
     final w = MediaQuery.sizeOf(context).width;
@@ -99,24 +95,20 @@ class _PhotosSectionState extends State<PhotosSection> {
     return Focus(
       autofocus: true,
       child: Shortcuts(
-        shortcuts: <ShortcutActivator, Intent>{
-          _leftActivator: const _ArrowLeftIntent(),
-          _rightActivator: const _ArrowRightIntent(),
+        shortcuts: const <ShortcutActivator, Intent>{
+          SingleActivator(LogicalKeyboardKey.arrowLeft): _ArrowLeftIntent(),
+          SingleActivator(LogicalKeyboardKey.arrowRight): _ArrowRightIntent(),
         },
         child: Actions(
           actions: <Type, Action<Intent>>{
-            _ArrowLeftIntent: CallbackAction<_ArrowLeftIntent>(
-              onInvoke: (_) {
-                _goRel(-1);
-                return null;
-              },
-            ),
-            _ArrowRightIntent: CallbackAction<_ArrowRightIntent>(
-              onInvoke: (_) {
-                _goRel(1);
-                return null;
-              },
-            ),
+            _ArrowLeftIntent: CallbackAction<_ArrowLeftIntent>(onInvoke: (_) {
+              _goRel(-1);
+              return null;
+            }),
+            _ArrowRightIntent: CallbackAction<_ArrowRightIntent>(onInvoke: (_) {
+              _goRel(1);
+              return null;
+            }),
           },
           child: _buildGallery(height, isMobile),
         ),
@@ -154,7 +146,7 @@ class _PhotosSectionState extends State<PhotosSection> {
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(16),
                         child: ZoomableTap(
-                          heroTagBase: 'gallery', // keeps your hero transition
+                          heroTagBase: 'gallery',
                           initialIndex: i,
                           providers: _providers,
                           child: Image.asset(
@@ -169,23 +161,27 @@ class _PhotosSectionState extends State<PhotosSection> {
                 },
               ),
 
-              // ← Arrow
+              // PREVIOUS on physical LEFT
               if (images.length > 1)
                 Positioned(
                   left: 8,
                   child: _NavButton(
                     icon: Icons.chevron_left,
-                    onTap: () => _goRel(-1),
+                    onTap: () => _goRel(
+                      Directionality.of(context) == TextDirection.rtl ? 1 : -1,
+                    ),
                   ),
                 ),
 
-              // → Arrow
+              // NEXT on physical RIGHT
               if (images.length > 1)
                 Positioned(
                   right: 8,
                   child: _NavButton(
                     icon: Icons.chevron_right,
-                    onTap: () => _goRel(1),
+                    onTap: () => _goRel(
+                      Directionality.of(context) == TextDirection.rtl ? -1 : 1,
+                    ),
                   ),
                 ),
             ],
@@ -233,17 +229,31 @@ class _NavButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      color: Colors.black.withOpacity(0.25),
-      borderRadius: BorderRadius.circular(999),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(999),
-        child: Padding(
-          padding: const EdgeInsets.all(6.0),
-          child: Icon(icon, size: 28, color: Colors.white),
+    // Force the icon to draw LTR so chevrons never auto-flip in RTL
+    return Directionality(
+      textDirection: TextDirection.ltr,
+      child: Material(
+        color: Colors.black.withOpacity(0.25),
+        shape: const CircleBorder(),
+        child: InkWell(
+          customBorder: const CircleBorder(),
+          onTap: onTap,
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Icon(icon, size: 28, color: Colors.white),
+          ),
         ),
       ),
+    );
+  }
+}
+
+// Small extension to inject icon keeping const constructors above simple
+extension on Widget {
+  Widget withIcon(Widget icon) {
+    return Stack(
+      alignment: Alignment.center,
+      children: [this, icon],
     );
   }
 }
