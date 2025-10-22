@@ -28,7 +28,7 @@ void main() async {
   // Release first paint
   RendererBinding.instance.allowFirstFrame();
 
-  // Boot with default 'en' (URL ?lang= and saved prefs will override on web / after first run)
+  // Boot with default 'he' (URL ?lang= and saved prefs will override on web / after first run)
   final controller = LocaleController('he');
   runApp(LocaleScope(notifier: controller, child: const DarAlFajrApp()));
 }
@@ -36,7 +36,6 @@ void main() async {
 class DarAlFajrApp extends StatelessWidget {
   const DarAlFajrApp({super.key});
 
-  @override
   @override
   Widget build(BuildContext context) {
     final controller = LocaleScope.of(context);

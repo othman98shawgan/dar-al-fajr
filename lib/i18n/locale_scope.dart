@@ -1,9 +1,9 @@
 // lib/i18n/locale_scope.dart
-// ignore_for_file: avoid_web_libraries_in_flutter
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'dart:html' as html;
+// Use modern web bindings instead of dart:html
+import 'package:web/web.dart' as web;
 
 /// AppLocale is just a short code.
 typedef AppLocale = String; // 'en' | 'ar' | 'he'
@@ -42,7 +42,7 @@ void _rewriteUrlWithLocaleWeb(AppLocale locale) {
       queryParameters: current.queryParameters.isEmpty ? null : current.queryParameters,
       fragment: current.fragment.isEmpty ? null : current.fragment,
     );
-    html.window.history.replaceState(null, '', newUri.toString());
+    web.window.history.replaceState(null, '', newUri.toString());
     return;
   }
 
@@ -61,7 +61,7 @@ void _rewriteUrlWithLocaleWeb(AppLocale locale) {
     queryParameters: current.queryParameters.isEmpty ? null : current.queryParameters,
     fragment: current.fragment.isEmpty ? null : current.fragment,
   );
-  html.window.history.replaceState(null, '', newUri.toString());
+  web.window.history.replaceState(null, '', newUri.toString());
 }
 
 /// Controls and persists the current locale.
