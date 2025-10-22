@@ -162,10 +162,10 @@ class BankDetails {
 /// ===== Photos section (paths only; text is minimal) =====
 class PhotosContent {
   // If you want to use this instead of PageView’s generator, list your real assets:
-  static const _count = 23;
+  static const _count = 24;
   static const _dir = 'assets/images';
   static const _prefix = 'image-';
-  static const _ext = '.jpg';
+  static const _ext = '.webp';
 
   static final List<String> images = List.generate(
     _count,

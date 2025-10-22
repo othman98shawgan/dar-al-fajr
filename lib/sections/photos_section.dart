@@ -27,6 +27,41 @@ class _PhotosSectionState extends State<PhotosSection> {
     _ctrl = PageController(viewportFraction: _viewportFraction);
     _startTimer();
     _providers = images.map((p) => AssetImage(p) as ImageProvider).toList();
+
+    // Warm the cache after we have a BuildContext
+    WidgetsBinding.instance.addPostFrameCallback((_) => _warmCache());
+  }
+
+// Prefetch a small head set eagerly, then the rest in the background.
+// No width/height on the widget; this only primes the decoder/cache.
+  Future<void> _warmCache() async {
+    if (!mounted) return;
+
+    final w = MediaQuery.sizeOf(context).width;
+    final dpr = MediaQuery.devicePixelRatioOf(context);
+    final isMobile = w < 900;
+
+    // Decode hint width roughly equal to on-screen card width (keeps aspect ratio).
+    // This is only for the *prefetch*; your Image.asset stays unchanged.
+    final visibleW = w * (isMobile ? 1.0 : _viewportFraction);
+    final targetW = (visibleW * dpr).clamp(600, 1600).round();
+
+    final eagerCount = isMobile ? 6 : _providers.length;
+
+    // Eager prefetch first few
+    await Future.wait(
+      _providers.take(eagerCount).map(
+            (p) => precacheImage(ResizeImage(p, width: targetW), context),
+          ),
+      eagerError: false,
+    );
+
+    // Background prefetch the rest without blocking a frame
+    for (final p in _providers.skip(eagerCount)) {
+      scheduleMicrotask(() {
+        if (mounted) precacheImage(ResizeImage(p, width: targetW), context);
+      });
+    }
   }
 
   void _startTimer() {
@@ -81,10 +116,6 @@ class _PhotosSectionState extends State<PhotosSection> {
     setState(() {});
   }
 
-  // Custom intents for arrow keys
-  static final _leftActivator = SingleActivator(LogicalKeyboardKey.arrowLeft);
-  static final _rightActivator = SingleActivator(LogicalKeyboardKey.arrowRight);
-
   @override
   Widget build(BuildContext context) {
     final w = MediaQuery.sizeOf(context).width;
@@ -99,24 +130,20 @@ class _PhotosSectionState extends State<PhotosSection> {
     return Focus(
       autofocus: true,
       child: Shortcuts(
-        shortcuts: <ShortcutActivator, Intent>{
-          _leftActivator: const _ArrowLeftIntent(),
-          _rightActivator: const _ArrowRightIntent(),
+        shortcuts: const <ShortcutActivator, Intent>{
+          SingleActivator(LogicalKeyboardKey.arrowLeft): _ArrowLeftIntent(),
+          SingleActivator(LogicalKeyboardKey.arrowRight): _ArrowRightIntent(),
         },
         child: Actions(
           actions: <Type, Action<Intent>>{
-            _ArrowLeftIntent: CallbackAction<_ArrowLeftIntent>(
-              onInvoke: (_) {
-                _goRel(-1);
-                return null;
-              },
-            ),
-            _ArrowRightIntent: CallbackAction<_ArrowRightIntent>(
-              onInvoke: (_) {
-                _goRel(1);
-                return null;
-              },
-            ),
+            _ArrowLeftIntent: CallbackAction<_ArrowLeftIntent>(onInvoke: (_) {
+              _goRel(-1);
+              return null;
+            }),
+            _ArrowRightIntent: CallbackAction<_ArrowRightIntent>(onInvoke: (_) {
+              _goRel(1);
+              return null;
+            }),
           },
           child: _buildGallery(height, isMobile),
         ),
@@ -154,13 +181,13 @@ class _PhotosSectionState extends State<PhotosSection> {
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(16),
                         child: ZoomableTap(
-                          heroTagBase: 'gallery', // keeps your hero transition
+                          heroTagBase: 'gallery',
                           initialIndex: i,
                           providers: _providers,
                           child: Image.asset(
                             images[i],
                             fit: BoxFit.cover,
-                            filterQuality: FilterQuality.high,
+                            filterQuality: isMobile ? FilterQuality.medium : FilterQuality.high,
                           ),
                         ),
                       ),
@@ -169,23 +196,27 @@ class _PhotosSectionState extends State<PhotosSection> {
                 },
               ),
 
-              // ← Arrow
+              // PREVIOUS on physical LEFT
               if (images.length > 1)
                 Positioned(
                   left: 8,
                   child: _NavButton(
                     icon: Icons.chevron_left,
-                    onTap: () => _goRel(-1),
+                    onTap: () => _goRel(
+                      Directionality.of(context) == TextDirection.rtl ? 1 : -1,
+                    ),
                   ),
                 ),
 
-              // → Arrow
+              // NEXT on physical RIGHT
               if (images.length > 1)
                 Positioned(
                   right: 8,
                   child: _NavButton(
                     icon: Icons.chevron_right,
-                    onTap: () => _goRel(1),
+                    onTap: () => _goRel(
+                      Directionality.of(context) == TextDirection.rtl ? -1 : 1,
+                    ),
                   ),
                 ),
             ],
@@ -233,15 +264,19 @@ class _NavButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      color: Colors.black.withOpacity(0.25),
-      borderRadius: BorderRadius.circular(999),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(999),
-        child: Padding(
-          padding: const EdgeInsets.all(6.0),
-          child: Icon(icon, size: 28, color: Colors.white),
+    // Freeze icon mirroring (always draw LTR so chevron directions are stable)
+    return Directionality(
+      textDirection: TextDirection.ltr,
+      child: Material(
+        color: Colors.black.withOpacity(0.25),
+        shape: const CircleBorder(),
+        child: InkWell(
+          customBorder: const CircleBorder(),
+          onTap: onTap,
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Icon(icon, size: 28, color: Colors.white),
+          ),
         ),
       ),
     );

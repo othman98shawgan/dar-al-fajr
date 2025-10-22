@@ -91,8 +91,11 @@ class Section extends StatelessWidget {
   const Section({super.key, required this.child});
   @override
   Widget build(BuildContext context) {
+    final w = MediaQuery.sizeOf(context).width;
+    final isMobile = w < 900;
+
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 42.0, horizontal: 16),
+      padding: EdgeInsets.symmetric(vertical: isMobile ? 24.0 : 36.0, horizontal: 16),
       child: Center(
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 1100),
