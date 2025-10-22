@@ -27,6 +27,41 @@ class _PhotosSectionState extends State<PhotosSection> {
     _ctrl = PageController(viewportFraction: _viewportFraction);
     _startTimer();
     _providers = images.map((p) => AssetImage(p) as ImageProvider).toList();
+
+    // Warm the cache after we have a BuildContext
+    WidgetsBinding.instance.addPostFrameCallback((_) => _warmCache());
+  }
+
+// Prefetch a small head set eagerly, then the rest in the background.
+// No width/height on the widget; this only primes the decoder/cache.
+  Future<void> _warmCache() async {
+    if (!mounted) return;
+
+    final w = MediaQuery.sizeOf(context).width;
+    final dpr = MediaQuery.devicePixelRatioOf(context);
+    final isMobile = w < 900;
+
+    // Decode hint width roughly equal to on-screen card width (keeps aspect ratio).
+    // This is only for the *prefetch*; your Image.asset stays unchanged.
+    final visibleW = w * (isMobile ? 1.0 : _viewportFraction);
+    final targetW = (visibleW * dpr).clamp(600, 1600).round();
+
+    final eagerCount = isMobile ? 6 : _providers.length;
+
+    // Eager prefetch first few
+    await Future.wait(
+      _providers.take(eagerCount).map(
+            (p) => precacheImage(ResizeImage(p, width: targetW), context),
+          ),
+      eagerError: false,
+    );
+
+    // Background prefetch the rest without blocking a frame
+    for (final p in _providers.skip(eagerCount)) {
+      scheduleMicrotask(() {
+        if (mounted) precacheImage(ResizeImage(p, width: targetW), context);
+      });
+    }
   }
 
   void _startTimer() {
@@ -152,7 +187,7 @@ class _PhotosSectionState extends State<PhotosSection> {
                           child: Image.asset(
                             images[i],
                             fit: BoxFit.cover,
-                            filterQuality: FilterQuality.high,
+                            filterQuality: isMobile ? FilterQuality.medium : FilterQuality.high,
                           ),
                         ),
                       ),
@@ -229,7 +264,7 @@ class _NavButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Force the icon to draw LTR so chevrons never auto-flip in RTL
+    // Freeze icon mirroring (always draw LTR so chevron directions are stable)
     return Directionality(
       textDirection: TextDirection.ltr,
       child: Material(
@@ -244,16 +279,6 @@ class _NavButton extends StatelessWidget {
           ),
         ),
       ),
-    );
-  }
-}
-
-// Small extension to inject icon keeping const constructors above simple
-extension on Widget {
-  Widget withIcon(Widget icon) {
-    return Stack(
-      alignment: Alignment.center,
-      children: [this, icon],
     );
   }
 }
