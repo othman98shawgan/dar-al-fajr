@@ -33,9 +33,9 @@ class ContentConfig {
 /// ===== Home section =====
 class HomeContent {
   static const hadith = {
-    'en': 'The Prophet (PBUH) said:\n"The best of you are those who learn the Qur\'an and teach it."',
+    'en': '"The best of you are those who learn the Qur\'an and teach it."',
     'ar': 'قال رسول الله ﷺ: «خَيْرُكُمْ مَنْ تَعَلَّمَ القُرْآنَ وَعَلَّمَهُ»',
-    'he': 'אמר הנביא ﷺ:\n"הטובים שבכם הם הלומדים את הקוראן ומלמדים אותו."',
+    'he': '"הטובים שבכם הם הלומדים את הקוראן ומלמדים אותו."',
   };
 
   static const subtitle = {
