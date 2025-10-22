@@ -36,6 +36,17 @@ class SiteAppBar extends StatelessWidget implements PreferredSizeWidget {
     final w = MediaQuery.sizeOf(context).width;
     final isMobile = w < 900;
 
+    final tt = Theme.of(context).textTheme;
+
+    // Use theme-based styles so they carry the locale's font family.
+    final brandTitleStyle =
+        (isMobile ? tt.titleLarge : tt.headlineSmall)?.copyWith(fontWeight: FontWeight.w700, color: Brand.green);
+
+    final navLinkStyle = (tt.labelLarge ?? tt.titleSmall ?? const TextStyle()).copyWith(color: Brand.green);
+
+    final donateTextStyle = (tt.labelLarge ?? tt.titleSmall ?? const TextStyle())
+        .copyWith(fontWeight: FontWeight.w700); // color comes from FilledButton
+
     final home = t(NavContent.home, locale);
     final about = t(NavContent.about, locale);
     final donate = t(NavContent.donate, locale);
@@ -52,8 +63,10 @@ class SiteAppBar extends StatelessWidget implements PreferredSizeWidget {
         SiteLogo(size: isMobile ? 36 : 48),
         const SizedBox(width: 10),
         if (w >= 380)
-          Text(ContentConfig.brandNameLocalized[locale] ?? ContentConfig.brandName,
-              style: const TextStyle(fontWeight: FontWeight.w700, color: Brand.green)),
+          Text(
+            ContentConfig.brandNameLocalized[locale] ?? ContentConfig.brandName,
+            style: brandTitleStyle, // <-- theme-based (no flash)
+          ),
       ]),
       actions: isMobile
           ? [
@@ -68,7 +81,7 @@ class SiteAppBar extends StatelessWidget implements PreferredSizeWidget {
                 padding: const EdgeInsets.symmetric(horizontal: 6.0),
                 child: FilledButton(
                   onPressed: () => onNavigate(keys.donate),
-                  child: Text(donate),
+                  child: Text(donate, style: donateTextStyle), // <-- theme-based
                 ),
               ),
               IconButton(
@@ -84,19 +97,26 @@ class SiteAppBar extends StatelessWidget implements PreferredSizeWidget {
             ]
           : [
               TextButton(
-                  onPressed: () => onNavigate(keys.home),
-                  child: Text(home, style: const TextStyle(color: Brand.green))),
+                onPressed: () => onNavigate(keys.home),
+                child: Text(home, style: navLinkStyle), // <-- theme-based
+              ),
               TextButton(
-                  onPressed: () => onNavigate(keys.about),
-                  child: Text(about, style: const TextStyle(color: Brand.green))),
+                onPressed: () => onNavigate(keys.about),
+                child: Text(about, style: navLinkStyle), // <-- theme-based
+              ),
               TextButton(
-                  onPressed: () => onNavigate(keys.photos),
-                  child: Text(photos, style: const TextStyle(color: Brand.green))),
+                onPressed: () => onNavigate(keys.photos),
+                child: Text(photos, style: navLinkStyle), // <-- theme-based
+              ),
               TextButton(
-                  onPressed: () => onNavigate(keys.contact),
-                  child: Text(contact, style: const TextStyle(color: Brand.green))),
+                onPressed: () => onNavigate(keys.contact),
+                child: Text(contact, style: navLinkStyle), // <-- theme-based
+              ),
               const SizedBox(width: 8),
-              FilledButton(onPressed: () => onNavigate(keys.donate), child: Text(donate)),
+              FilledButton(
+                onPressed: () => onNavigate(keys.donate),
+                child: Text(donate, style: donateTextStyle), // <-- theme-based
+              ),
               const SizedBox(width: 8),
               // Locale picker (desktop: compact popup)
               _LocaleButton(
@@ -173,7 +193,10 @@ class _LocaleButton extends StatelessWidget {
           const Icon(Icons.language, color: Brand.green),
           if (!isMobile) ...[
             const SizedBox(width: 6),
-            Text(currentShort, style: const TextStyle(color: Brand.green, fontWeight: FontWeight.w700)),
+            // Use theme-based style for the short code too
+            Text(currentShort,
+                style: (Theme.of(context).textTheme.labelLarge ?? const TextStyle())
+                    .copyWith(color: Brand.green, fontWeight: FontWeight.w700)),
           ],
         ],
       ),

@@ -57,6 +57,62 @@
       content="Join us in our mission to spread knowledge and understanding of the Qur’an."
     />
     <meta name="twitter:image" content="https://www.daralfajr.org/og-image.jpg" />
+
+    <!-- ==== PATCH: hide text only for RTL locales BEFORE fonts load ==== -->
+    <style>
+      html.fonts-wait body { visibility: hidden; }
+    </style>
+    <script>
+      (function () {
+        try {
+          var seg = (location.pathname.split("/")[1] || "").toLowerCase();
+          var isAr = seg === "ar";
+          var isHe = seg === "he";
+          if (!(isAr || isHe)) return; // Only gate for RTL locales
+
+          // Add the class ASAP (before any Google Fonts <link> below)
+          document.documentElement.classList.add("fonts-wait");
+
+          function revealOnce() {
+            document.documentElement.classList.remove("fonts-wait");
+          }
+
+          // If Font Loading API exists, wait for the exact faces we use
+          if (document.fonts && document.fonts.load) {
+            var fam = isAr ? "Cairo" : "Heebo";
+            // Adjust weights to match the CSS you actually use
+            var promises = [
+              document.fonts.load("400 16px " + fam),
+              document.fonts.load("600 16px " + fam),
+              document.fonts.load("700 16px " + fam),
+            ];
+
+            // Hard safety so we never hang invisible
+            var safety = setTimeout(revealOnce, 900);
+
+            Promise.all(promises)
+              .then(function () { clearTimeout(safety); setTimeout(revealOnce, 0); })
+              .catch(function () { clearTimeout(safety); revealOnce(); });
+          } else {
+            // Older browsers: brief delay then reveal
+            setTimeout(revealOnce, 300);
+          }
+        } catch (e) {
+          // Fail open
+        }
+      })();
+    </script>
+    <!-- ==== /PATCH ==== -->
+
+    <!-- Preconnect to speed up font CSS & binary fetch -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+    <!-- Load the families you'll use per-locale; include weights you actually use -->
+    <!-- Keeping your exact links; if flashes persist, consider display=optional -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;600;700&display=swap" rel="stylesheet" />
   </head>
   <body>
     <script src="flutter_bootstrap.js" async></script>

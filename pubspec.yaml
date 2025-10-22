@@ -35,3 +35,28 @@ flutter:
   
   assets:
     - assets/images/
+
+  fonts:
+    - family: Inter
+      fonts:
+        - asset: assets/fonts/Inter/Inter-Regular.ttf
+        - asset: assets/fonts/Inter/Inter-SemiBold.ttf
+          weight: 600
+        - asset: assets/fonts/Inter/Inter-Bold.ttf
+          weight: 700
+
+    - family: Cairo
+      fonts:
+        - asset: assets/fonts/Cairo/Cairo-Regular.ttf
+        - asset: assets/fonts/Cairo/Cairo-SemiBold.ttf
+          weight: 600
+        - asset: assets/fonts/Cairo/Cairo-Bold.ttf
+          weight: 700
+
+    - family: Heebo
+      fonts:
+        - asset: assets/fonts/Heebo/Heebo-Regular.ttf
+        - asset: assets/fonts/Heebo/Heebo-SemiBold.ttf
+          weight: 600
+        - asset: assets/fonts/Heebo/Heebo-Bold.ttf
+          weight: 700

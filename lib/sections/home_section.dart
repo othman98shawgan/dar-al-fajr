@@ -1,6 +1,5 @@
 import 'dart:ui' show FontFeature;
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 import '../i18n/locale_scope.dart';
 import '../theme/brand.dart';
@@ -23,9 +22,13 @@ class HomeSection extends StatelessWidget {
     final intro = hadithText.length > 1 ? hadithText.first : '';
     final quote = hadithText.length > 1 ? hadithText.sublist(1).join('\n') : hadithText.first;
 
-    final headlineStyle = GoogleFonts.cairo(
-      textStyle: (isMobile ? Theme.of(context).textTheme.headlineMedium : Theme.of(context).textTheme.displaySmall)
-          ?.copyWith(color: Brand.green),
+    final tt = Theme.of(context).textTheme;
+    final base = isMobile ? tt.headlineMedium : tt.displaySmall;
+
+    final headlineStyle = (base ?? tt.titleLarge)?.copyWith(
+      color: Brand.green,
+      fontWeight: FontWeight.w700, // optional
+      letterSpacing: 0.1, // optional
     );
 
     final subStyle = (isMobile ? Theme.of(context).textTheme.titleMedium : Theme.of(context).textTheme.titleLarge)
