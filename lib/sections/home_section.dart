@@ -9,6 +9,31 @@ class HomeSection extends StatelessWidget {
   final AppLocale locale;
   const HomeSection({super.key, required this.locale});
 
+  Text _arabicWithMark(String text, TextStyle? baseStyle) {
+    // U+FDFA “ﷺ”
+    const mark = '\uFDFA';
+    final parts = text.split(mark);
+    final s = (baseStyle ?? const TextStyle()).copyWith(
+      // your hadith base stays Cairo (or whatever you already use)
+      fontFamily: 'Cairo',
+      letterSpacing: 0,
+    );
+
+    // Build spans: normal text in Cairo, the mark in ScheherazadeNew
+    final spans = <InlineSpan>[];
+    for (var i = 0; i < parts.length; i++) {
+      if (i > 0) {
+        spans.add(TextSpan(
+          text: ' $mark', // include a thin space before if you like
+          style: s.copyWith(fontFamily: 'ScheherazadeNew', fontWeight: FontWeight.w700),
+        ));
+      }
+      spans.add(TextSpan(text: parts[i], style: s));
+    }
+
+    return Text.rich(TextSpan(children: spans), textAlign: TextAlign.center);
+  }
+
   @override
   Widget build(BuildContext context) {
     final w = MediaQuery.sizeOf(context).width;
@@ -17,39 +42,105 @@ class HomeSection extends StatelessWidget {
     final labels = HomeContent.statsLabels(locale);
     final values = HomeContent.statsValues;
 
-    // split hadith -> intro + quote
-    final hadithText = t(HomeContent.hadith, locale).split('\n');
-    final intro = hadithText.length > 1 ? hadithText.first : '';
-    final quote = hadithText.length > 1 ? hadithText.sublist(1).join('\n') : hadithText.first;
+    // --- Always fetch Arabic hadith (for the main line) ---
+    List<String> _splitLines(String s) => s.split('\n');
+    final hadithArLines = _splitLines(t(HomeContent.hadith, 'ar'));
+    final arIntro = hadithArLines.length > 1 ? hadithArLines.first : '';
+    final arQuote = hadithArLines.length > 1 ? hadithArLines.sublist(1).join('\n') : hadithArLines.first;
+
+    // --- Translation only when locale is he/en ---
+    final showTranslation = locale == 'he' || locale == 'en';
+    final hadithTrLines = showTranslation ? _splitLines(t(HomeContent.hadith, locale)) : const <String>[];
+    final trIntro = showTranslation && hadithTrLines.length > 1 ? hadithTrLines.first : '';
+    final trQuote = showTranslation && hadithTrLines.isNotEmpty
+        ? (hadithTrLines.length > 1 ? hadithTrLines.sublist(1).join('\n') : hadithTrLines.first)
+        : '';
 
     final tt = Theme.of(context).textTheme;
+
+    // Base headline sizes by screen
     final base = isMobile ? tt.headlineMedium : tt.displaySmall;
 
-    final headlineStyle = (base ?? tt.titleLarge)?.copyWith(
+    // Arabic headline: force Cairo family so it looks correct on en/he pages too.
+    final arabicHeadlineStyle = (base ?? tt.titleLarge)?.copyWith(
       color: Brand.green,
-      fontWeight: FontWeight.w700, // optional
-      letterSpacing: 0.1, // optional
+      fontWeight: FontWeight.w700,
+      letterSpacing: 0, // Arabic: no extra letter spacing
+      fontFamily: 'Cairo', // <- ensure Arabic font even if app locale is en/he
+      height: 1.25,
     );
 
-    final subStyle = (isMobile ? Theme.of(context).textTheme.titleMedium : Theme.of(context).textTheme.titleLarge)
-        ?.copyWith(height: 1.25);
+    // Arabic intro (small, green label style)
+    final arabicIntroStyle = tt.labelLarge?.copyWith(
+      color: Brand.green,
+      letterSpacing: 0,
+      fontFamily: 'Cairo',
+    );
+    final trBase = isMobile ? tt.titleMedium : tt.titleLarge;
+
+    // Translation style: smaller than headline, neutral color
+    final translationStyle = trBase?.copyWith(
+      height: 1.35,
+      // For Hebrew we usually avoid letter spacing; English can keep defaults
+
+      color: Brand.green.withValues(alpha: 0.9),
+
+      letterSpacing: locale == 'he' ? 0 : null,
+      // No fontFamily here: theme already uses Heebo for he, Inter for en
+    );
+
+    final translationIntroStyle = (tt.labelLarge ?? trBase)?.copyWith(
+      height: 1.35,
+      fontSize: (trBase?.fontSize ?? (isMobile ? 18 : 22)) - 2,
+      letterSpacing: locale == 'he' ? 0 : null,
+      color: Brand.text.withOpacity(0.8),
+    );
+
+    final subStyle = (isMobile ? tt.titleMedium : tt.titleLarge)?.copyWith(height: 1.25);
 
     final gridCount = isMobile ? 2 : 4;
     final valueBoxWidth = isMobile ? 80.0 : 96.0; // fixed width for animated number
 
     return Column(
       children: [
-        if (intro.isNotEmpty)
-          Text(
-            intro,
-            textAlign: TextAlign.center,
-            style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                  color: Brand.green,
-                  letterSpacing: 0.25,
-                ),
+        // --- Arabic intro (if present) ---
+        if (arIntro.isNotEmpty)
+          Directionality(
+            textDirection: TextDirection.rtl,
+            child: _arabicWithMark(
+              arIntro,
+              tt.labelLarge?.copyWith(color: Brand.green),
+            ),
           ),
-        // Hadith (hero)
-        Text(quote, textAlign: TextAlign.center, style: headlineStyle),
+
+        // Arabic hadith (always)
+        Directionality(
+          textDirection: TextDirection.rtl,
+          child: _arabicWithMark(
+            arQuote,
+            (base ?? tt.titleLarge)?.copyWith(
+              color: Brand.green,
+              fontWeight: FontWeight.w700,
+              height: 1.35,
+              // leave fontFamily off here (helper sets Cairo for body, Scheherazade for the mark)
+            ),
+          ),
+        ),
+
+        // --- Translation (only on he/en) ---
+        if (showTranslation && (trIntro.isNotEmpty || trQuote.isNotEmpty)) ...[
+          const SizedBox(height: 10),
+          Directionality(
+            textDirection: locale == 'he' ? TextDirection.rtl : TextDirection.ltr,
+            child: Column(
+              children: [
+                if (trIntro.isNotEmpty) Text(trIntro, textAlign: TextAlign.center, style: translationIntroStyle),
+                if (trQuote.isNotEmpty) Text(trQuote, textAlign: TextAlign.center, style: translationStyle),
+              ],
+            ),
+          ),
+        ],
+
         const SizedBox(height: 12),
 
         // Subtitle (slightly softer on mobile)
@@ -69,18 +160,28 @@ class HomeSection extends StatelessWidget {
           ),
           children: [
             _StatCard(
-                label: labels['students']!, value: values['students']!, valueBoxWidth: valueBoxWidth, forcePlus: true),
+              label: labels['students']!,
+              value: values['students']!,
+              valueBoxWidth: valueBoxWidth,
+              forcePlus: true,
+            ),
             _StatCard(
-                label: labels['weeklyClasses']!,
-                value: values['weeklyClasses']!,
-                valueBoxWidth: valueBoxWidth,
-                forcePlus: true),
+              label: labels['weeklyClasses']!,
+              value: values['weeklyClasses']!,
+              valueBoxWidth: valueBoxWidth,
+              forcePlus: true,
+            ),
             _StatCard(
-                label: labels['volunteers']!,
-                value: values['volunteers']!,
-                valueBoxWidth: valueBoxWidth,
-                forcePlus: true),
-            _StatCard(label: labels['years']!, value: values['years']!, valueBoxWidth: valueBoxWidth),
+              label: labels['volunteers']!,
+              value: values['volunteers']!,
+              valueBoxWidth: valueBoxWidth,
+              forcePlus: true,
+            ),
+            _StatCard(
+              label: labels['years']!,
+              value: values['years']!,
+              valueBoxWidth: valueBoxWidth,
+            ),
           ],
         ),
       ],
@@ -98,7 +199,7 @@ class _StatCard extends StatelessWidget {
     required this.label,
     required this.value,
     required this.valueBoxWidth,
-    this.forcePlus = false, // default off
+    this.forcePlus = false,
   });
 
   @override
