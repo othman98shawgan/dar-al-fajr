@@ -1,11 +1,33 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter/rendering.dart' show RendererBinding;
 
 import 'theme/brand.dart';
 import 'pages/landing_page.dart';
 import 'i18n/locale_scope.dart';
+import 'utils/prefetch.dart';
 
-void main() {
+Future<void> _prewarmCriticalImages() async {
+  // Use your real asset paths
+  const logo = AssetImage('assets/images/logo.png');
+  const about = AssetImage('assets/images/image-00.jpg');
+  await Future.wait([
+    prefetchImageNoContext(logo),
+    prefetchImageNoContext(about),
+  ]);
+}
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // Hold first paint
+  RendererBinding.instance.deferFirstFrame();
+
+  await _prewarmCriticalImages(); // your prefetch (and font preload if any)
+
+  // Release first paint
+  RendererBinding.instance.allowFirstFrame();
+
   // Boot with default 'en' (URL ?lang= and saved prefs will override on web / after first run)
   final controller = LocaleController('he');
   runApp(LocaleScope(notifier: controller, child: const DarAlFajrApp()));
