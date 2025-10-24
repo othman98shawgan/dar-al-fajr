@@ -191,13 +191,12 @@ class _LocaleButton extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           const Icon(Icons.language, color: Brand.green),
-          if (!isMobile) ...[
-            const SizedBox(width: 6),
-            // Use theme-based style for the short code too
-            Text(currentShort,
-                style: (Theme.of(context).textTheme.labelLarge ?? const TextStyle())
-                    .copyWith(color: Brand.green, fontWeight: FontWeight.w700)),
-          ],
+
+          const SizedBox(width: 6),
+          // Use theme-based style for the short code too
+          Text(currentShort,
+              style: (Theme.of(context).textTheme.labelLarge ?? const TextStyle())
+                  .copyWith(color: Brand.green, fontWeight: FontWeight.w700)),
         ],
       ),
       onSelected: (code) => onChanged(code),
