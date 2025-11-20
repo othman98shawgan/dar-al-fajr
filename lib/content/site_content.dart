@@ -52,8 +52,8 @@ class HomeContent {
       };
 
   static const statsValues = {
-    'students': '100',
-    'weeklyClasses': '50',
+    'students': '110',
+    'weeklyClasses': '60',
     'volunteers': '30',
     'years': '2',
   };
@@ -74,11 +74,11 @@ class AboutContent {
 
   static const description = {
     'en':
-        'Dar al-Fajr is an Islamic education center in Kfar Kama, dedicated to teaching children and youth the reading, memorization, and proper recitation of the Qur’an. In addition to Qur’an studies, we hold weekly lessons that focus on Islamic values, faith, and character - covering topics such as fiqh, ʿaqīdah, and sīrah. Today, Dar al-Fajr serves over 100 students across multiple levels, from beginners to advanced. Our mission is clear: to nurture a generation that loves the Qur’an, understands its message, and lives by its guidance.',
+        'Dar al-Fajr is an Islamic education center in Kfar Kama, dedicated to teaching children and youth the reading, memorization, and proper recitation of the Qur’an. In addition to Qur’an studies, we hold weekly lessons that focus on Islamic values, faith, and character - covering topics such as fiqh, ʿaqīdah, and sīrah. Today, Dar al-Fajr serves over 110 students across multiple levels, from beginners to advanced. Our mission is clear: to nurture a generation that loves the Qur’an, understands its message, and lives by its guidance.',
     'ar':
-        'دار الفجر هو مركز تعليمي إسلامي في كفر كما، يُعنى بتعليم الأطفال والناشئة قراءة القرآن الكريم وتجويده وحفظه. إلى جانب دروس القرآن، نقيم دروسًا أسبوعية تُعنى بالقيم الإسلامية والإيمان والأخلاق، وتشمل موضوعات في الفقه والعقيدة والسيرة النبوية. يضم المركز اليوم أكثر من 100 طالبًا وطالبة في مستويات مختلفة، من المبتدئين إلى المتقدمين. ورسالتنا واضحة: تربية جيلٍ يحبّ القرآن، يفهم معانيه ويعيش بهديه.',
+        'دار الفجر هو مركز تعليمي إسلامي في كفر كما، يُعنى بتعليم الأطفال والناشئة قراءة القرآن الكريم وتجويده وحفظه. إلى جانب دروس القرآن، نقيم دروسًا أسبوعية تُعنى بالقيم الإسلامية والإيمان والأخلاق، وتشمل موضوعات في الفقه والعقيدة والسيرة النبوية. يضم المركز اليوم أكثر من 110 طالبًا وطالبة في مستويات مختلفة، من المبتدئين إلى المتقدمين. ورسالتنا واضحة: تربية جيلٍ يحبّ القرآن، يفهم معانيه ويعيش بهديه.',
     'he':
-        'דאר אל־פג׳ר הוא מרכז חינוך אסלאמי בכפר כמא, שמוקדש ללימוד קריאה, שינון ותגויד של הקוראן לילדים ולנוער. בנוסף ללימודי הקוראן, אנו מקיימים שיעורים שבועיים בנושאים של ערכים אסלאמיים, אמונה ומידות טובות - כגון פִקְה, עַקִידָה וסִירַה. כיום לומדים במרכז למעלה מ־100 תלמידים ותלמידות ברמות שונות - מהמתחילים ועד המתקדמים. החזון שלנו ברור: לטפח דור שאוהב את הקוראן, מבין את משמעותו וחי לאורו.',
+        'דאר אל־פג׳ר הוא מרכז חינוך אסלאמי בכפר כמא, שמוקדש ללימוד קריאה, שינון ותגויד של הקוראן לילדים ולנוער. בנוסף ללימודי הקוראן, אנו מקיימים שיעורים שבועיים בנושאים של ערכים אסלאמיים, אמונה ומידות טובות - כגון פִקְה, עַקִידָה וסִירַה. כיום לומדים במרכז למעלה מ־110 תלמידים ברמות שונות - מהמתחילים ועד המתקדמים. החזון שלנו ברור: לטפח דור שאוהב את הקוראן, מבין את משמעותו וחי לאורו.',
   };
 
   static List<String> pillars(AppLocale l) => [
@@ -162,7 +162,7 @@ class BankDetails {
 /// ===== Photos section (paths only; text is minimal) =====
 class PhotosContent {
   // If you want to use this instead of PageView’s generator, list your real assets:
-  static const _count = 24;
+  static const _count = 27;
   static const _dir = 'assets/images';
   static const _prefix = 'image-';
   static const _ext = '.webp';
@@ -190,40 +190,46 @@ class ContactContent {
 
   static List<Member> boardMembers = const [
     Member(
-      name: 'Aslan Nash',
+      name: {'en': 'Aslan Nash', 'ar': 'اسلان ناش', 'he': 'אסלאן נאש'},
       role: {'en': 'Board member', 'ar': 'عضو إدارة', 'he': 'חבר הנהלה'},
       phone: 'tel:+972532737826',
       whatsapp: 'https://wa.me/972532737826',
     ),
     Member(
-      name: 'Ahmad Shawgan',
+      name: {'en': 'Ahmad Shawgan', 'ar': 'أحمد شوجن', 'he': 'אחמד שוגן'},
       role: {'en': 'Board member', 'ar': 'عضو إدارة', 'he': 'חבר הנהלה'},
       phone: 'tel:+972507864552',
       whatsapp: 'https://wa.me/972507864552',
     ),
     Member(
-      name: 'Noah Thawko',
+      name: {'en': 'Noah Thawko', 'ar': 'نوح تحاوخو', 'he': 'נוח תחאוכו'},
       role: {'en': 'Board member', 'ar': 'عضو إدارة', 'he': 'חבר הנהלה'},
       phone: 'tel:+972506825975',
       whatsapp: 'https://wa.me/972506825975',
     ),
     Member(
-      name: 'Hani Ashmooz',
+      name: {'en': 'Hani Ashmoz', 'ar': 'هاني أشموز', 'he': 'האני אשמוז'},
       role: {'en': 'Board member', 'ar': 'عضو إدارة', 'he': 'חבר הנהלה'},
       phone: 'tel:+972505213482',
       whatsapp: 'https://wa.me/972505213482',
     ),
     Member(
-      name: 'Sam Thawko',
+      name: {'en': 'Sam Thawko', 'ar': 'سام تحاوخو', 'he': 'סאם תחאוכו'},
       role: {'en': 'Board member', 'ar': 'عضو إدارة', 'he': 'חבר הנהלה'},
       phone: 'tel:+972543046004',
       whatsapp: 'https://wa.me/972543046004',
+    ),
+    Member(
+      name: {'en': 'Othman Shawgan', 'ar': 'عثمان شوجن', 'he': "עות'מאן שוגן"},
+      role: {'en': 'Director of Education', 'ar': 'المدير التعليمي', 'he': 'מנהל הלימודים'},
+      phone: '',
+      whatsapp: '',
     ),
   ];
 }
 
 class Member {
-  final String name;
+  final Map<String, String> name;
   final Map<String, String> role; // localized role
   final String? phone; // tel:+972...
   final String? whatsapp; // https://wa.me/972...
@@ -235,6 +241,7 @@ class Member {
   });
 
   String roleFor(AppLocale l) => t(role, l);
+  String nameFor(AppLocale l) => t(name, l);
 }
 
 /// ===== Nav labels =====
