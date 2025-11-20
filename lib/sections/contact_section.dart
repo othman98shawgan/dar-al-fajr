@@ -53,38 +53,58 @@ class _MemberCard extends StatelessWidget {
     final w = MediaQuery.sizeOf(context).width;
     final isNarrow = w < 500; // stack actions on very small phones
 
-    final actionButtons = isNarrow
-        ? Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
+    // Check validity before building widgets
+    final hasPhone = member.phone != null && member.phone!.trim().isNotEmpty;
+    final hasWhatsapp = member.whatsapp != null && member.whatsapp!.trim().isNotEmpty;
+
+    Widget? actionButtons;
+
+    // If neither exists, we render an empty box
+    if (!hasPhone && !hasWhatsapp) {
+      actionButtons = const SizedBox.shrink();
+    } else {
+      if (isNarrow) {
+        // Mobile (Stacked)
+        actionButtons = Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (hasPhone)
               _LaunchIcon(
                 tooltip: t(ContactContent.call, locale),
                 icon: Icons.call,
                 url: member.phone,
               ),
-              const SizedBox(height: 6),
+            // Only show spacer if BOTH are present
+            if (hasPhone && hasWhatsapp) const SizedBox(height: 6),
+            if (hasWhatsapp)
               _LaunchIcon(
                 tooltip: t(ContactContent.whatsapp, locale),
                 icon: FontAwesomeIcons.whatsapp,
                 url: member.whatsapp,
               ),
-            ],
-          )
-        : Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
+          ],
+        );
+      } else {
+        // Desktop/Tablet (Row)
+        actionButtons = Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (hasPhone)
               _LaunchIcon(
                 tooltip: t(ContactContent.call, locale),
                 icon: Icons.call,
                 url: member.phone,
               ),
+            if (hasWhatsapp)
               _LaunchIcon(
                 tooltip: t(ContactContent.whatsapp, locale),
                 icon: FontAwesomeIcons.whatsapp,
                 url: member.whatsapp,
               ),
-            ],
-          );
+          ],
+        );
+      }
+    }
 
     return Card(
       child: Padding(
@@ -95,7 +115,7 @@ class _MemberCard extends StatelessWidget {
               radius: 22,
               backgroundColor: Brand.bg,
               child: Text(
-                _initials(member.name),
+                _initials(member.nameFor('en')),
                 style: const TextStyle(color: Brand.green, fontWeight: FontWeight.w700),
               ),
             ),
@@ -105,7 +125,7 @@ class _MemberCard extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(member.name, style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 16)),
+                  Text(member.nameFor(locale), style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 16)),
                   const SizedBox(height: 2),
                   Text(member.roleFor(locale), style: TextStyle(color: Colors.black.withOpacity(0.7))),
                 ],
@@ -136,9 +156,15 @@ class _LaunchIcon extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isEnabled = url != null && url!.trim().isNotEmpty;
+
+    // If no URL, hide the widget entirely
+    if (!isEnabled) {
+      return const SizedBox.shrink();
+    }
+
     return IconButton(
       tooltip: tooltip,
-      onPressed: !isEnabled ? null : () => launchUrl(Uri.parse(url!), mode: LaunchMode.externalApplication),
+      onPressed: () => launchUrl(Uri.parse(url!), mode: LaunchMode.externalApplication),
       icon: Icon(icon),
       color: Brand.green,
       // Ensure comfy tap targets
@@ -175,7 +201,7 @@ class _GlobalContactRow extends StatelessWidget {
       ),
       _BigIconButton(
         icon: FontAwesomeIcons.whatsapp,
-        label: t(ContactContent.whatsapp, locale), // or keep 'WhatsApp' literal if you prefer
+        label: t(ContactContent.whatsapp, locale),
         url: ContentConfig.whatsappLink,
         color: const Color(0xFF25D366),
         expand: isMobile,
