@@ -5,6 +5,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
 version: 1.0.0+1
 
+# Local environment: Flutter 3.44.3, Dart 3.12.2
 environment:
   sdk: '>=3.3.4 <4.0.0'
 
