@@ -19,6 +19,14 @@ class ContentConfig {
     'he': 'דאר אל-פג׳ר',
   };
 
+  static const amutaNumber = '580778629';
+
+  static const amutaBadge = {
+    'en': 'Registered Non-Profit #580778629 • Kfar Kama',
+    'ar': 'جمعية مسجلة #580778629 • كفر كما',
+    'he': 'עמותה רשומה (ע"ר) #580778629 • כפר כמא',
+  };
+
   static const brandLogo = 'assets/images/logo.png';
   static const donateUrl = 'https://pay.sumit.co.il/frrouf/i66g0c/c/payment/';
   static const studentPayUrl = 'https://pay.sumit.co.il/frrouf/i66g6b/c/payment/';
@@ -43,6 +51,12 @@ class HomeContent {
     'en': 'Join us in our mission to spread knowledge and understanding of the Qur\'an.',
     'ar': 'انضمّ إلينا في رسالتنا نحو جيل قرآني.',
     'he': 'בואו להיות חלק מהמאמץ להפיץ את הידע וההבנה של הקוראן.',
+  };
+
+  static const secondaryCta = {
+    'en': 'Our Mission',
+    'ar': 'رسالتنا',
+    'he': 'החזון שלנו',
   };
 
   static Map<String, String> statsLabels(AppLocale l) => {
@@ -87,6 +101,33 @@ class AboutContent {
         t({'en': 'Community', 'ar': 'المجتمع', 'he': 'קהילה'}, l),
         t({'en': 'Service', 'ar': 'الخدمة', 'he': 'שירות'}, l),
       ];
+
+  static List<String> pillarDescriptions(AppLocale l) => [
+        t(
+          {
+            'en': 'Structured Qur’an recitation, memorization, and weekly lessons in Islamic values, fiqh, and sīrah.',
+            'ar': 'حلقات منهجية لتلاوة القرآن الكريم وحفظه، ودروس أسبوعية في العقيدة والفقه والسيرة النبوية.',
+            'he': 'לימוד מובנה של קריאה ושינון הקוראן, לצד שיעורים שבועיים בערכים, אמונה ומידות טובות.',
+          },
+          l,
+        ),
+        t(
+          {
+            'en': 'Strengthening identity, brotherhood, and shared values for over 183 boys and girls in Kfar Kama.',
+            'ar': 'تعزيز الهوية والأخوة والقيم المشتركة لأكثر من 183 طالباً وطالبة في كفر كما.',
+            'he': 'חיזוק הזהות, האחווה והערכים המשותפים עבור למעלה מ־183 תלמידים ותלמידות בכפר כמא.',
+          },
+          l,
+        ),
+        t(
+          {
+            'en': 'Powered by 45+ dedicated volunteers nurturing a generation that lives by the guidance of the Qur’an.',
+            'ar': 'بجهود أكثر من 45 متطوعاً مخلصاً في تربية جيل يعيش بهدي القرآن الكريم ويخدم مجتمعه.',
+            'he': 'מופעל על ידי למעלה מ־45 מתנדבים מסורים המטפחים דור שחי לאורו של הקוראן ותורם לקהילה.',
+          },
+          l,
+        ),
+      ];
 }
 
 /// ===== Donation section =====
@@ -103,6 +144,12 @@ class DonationContent {
     'he': 'כל פסוק שנשנן וכל אות שנקרא – מוסיפים לשכרם של התומכים בדרך הזאת.',
   };
 
+  static const recurringBadge = {
+    'en': 'Monthly Standing Order (הוראת קבע) Recommended',
+    'ar': 'يُوصى بالتبرع الشهري الثابت (הוראת קבע)',
+    'he': 'מומלץ להצטרף כשותפים קבועים בהוראת קבע',
+  };
+
   static const cardCta = {
     'he': 'תרומה באשראי / הוראת קבע',
     'ar': 'تبرّع بالبطاقة / تبرّع شهري',
@@ -116,8 +163,8 @@ class DonationContent {
   };
 
   static const bankTitle = {
-    'en': 'Bank Transfer',
-    'ar': 'تحويل بنكي',
+    'en': 'Direct Bank Transfer',
+    'ar': 'تحويل بنكي مباشر',
     'he': 'העברה בנקאית',
   };
 
@@ -125,20 +172,20 @@ class DonationContent {
   static const bankDetails = {
     'en':
         'Bank: 17 – Mercantile Discount\nBranch: HaTavor 695\nAccount Name: Dar al-Fajr Kfar Kama\nAccount Number: 69187',
-    'ar': 'البنك: 17 – مركنتיל ديسكونت\nالفرع: التابور 695\nاسم الحساب: دار الفجر كفر كما\nرقم الحساب: 69187',
+    'ar': 'البنك: 17 – مركنتيل ديسكونت\nالفرع: التابور 695\nاسم الحساب: دار الفجر كفر كما\nرقم الحساب: 69187',
     'he': 'בנק: 17 - מרכנתיל דיסקונט בע"מ\nסניף: התבור 695\nשם המוטב: דאר אל פג׳ר כפר כמא\nמספר חשבון: 69187',
   };
 
   static const copyCta = {
-    'en': 'Copy Details',
-    'ar': 'نسخ التفاصيل',
-    'he': 'העתקת פרטים',
+    'en': 'Copy All Details',
+    'ar': 'نسخ جميع التفاصيل',
+    'he': 'העתקת כל הפרטים',
   };
 
   static const copied = {
-    'en': 'Bank details copied',
-    'ar': 'تم نسخ التفاصيل البنكية',
-    'he': 'פרטי הבנק הועתקו',
+    'en': 'Copied to clipboard',
+    'ar': 'تم النسخ',
+    'he': 'הועתק ללוח',
   };
 }
 
@@ -160,9 +207,20 @@ class BankDetails {
       'Bank: $bankName\nAccount Name: $accountName\nAccount Number: $accountNumber\nIBAN: $iban\nSWIFT: $swift';
 }
 
-/// ===== Photos section (paths only; text is minimal) =====
+/// ===== Photos section =====
 class PhotosContent {
-  // If you want to use this instead of PageView’s generator, list your real assets:
+  static const title = {
+    'en': 'Campus & Community Gallery',
+    'ar': 'معرض صور المركز',
+    'he': 'גלריית תמונות מהמרכז',
+  };
+
+  static const subtitle = {
+    'en': 'Moments from our weekly study circles, student activities, and community gatherings in Kfar Kama.',
+    'ar': 'لمحات من حلقات التحفيظ الأسبوعية، أنشطة الطلاب، واللقاءات التربوية في كفر كما.',
+    'he': 'רגעים מתוך שיעורי הקוראן, הפעילויות החינוכיות והמפגשים הקהילתיים שלנו בכפר כמא.',
+  };
+
   static const _count = 27;
   static const _dir = 'assets/images';
   static const _prefix = 'image-';
@@ -178,9 +236,15 @@ class PhotosContent {
 /// ===== Contact section =====
 class ContactContent {
   static const title = {
-    'en': 'Contact Us',
-    'ar': 'تواصل معنا',
-    'he': 'צרו קשר',
+    'en': 'Contact & Secretariat',
+    'ar': 'تواصل معنا والسكرتارية',
+    'he': 'צרו קשר ומזכירות',
+  };
+
+  static const subtitle = {
+    'en': 'Reach out to our board members or contact the secretariat directly during office hours.',
+    'ar': 'تواصلوا مع أعضاء الإدارة أو مع سكرتارية المركز مباشرة خلال ساعات الدوام.',
+    'he': 'מוזמנים לפנות לחברי ההנהלה או ליצור קשר ישיר עם מזכירות המרכז בשעות הפעילות.',
   };
 
   static const officeHoursTitle = {
@@ -190,9 +254,9 @@ class ContactContent {
   };
 
   static const officeHoursValue = {
-    'en': 'Sunday – Thursday, 16:00 – 18:00',
-    'ar': 'الأحد – الخميس، 16:00 – 18:00',
-    'he': 'ראשון – חמישי, 16:00 – 18:00',
+    'en': 'Sunday – Thursday\n16:00 – 18:00',
+    'ar': 'الأحد – الخميس\n16:00 – 18:00',
+    'he': 'ראשון – חמישי\n16:00 – 18:00',
   };
 
   static const call = {'en': 'Call', 'ar': 'اتصال', 'he': 'שיחה'};
@@ -265,4 +329,25 @@ class NavContent {
   static const donate = {'en': 'Donate', 'ar': 'تبرّع', 'he': 'תרומה'};
   static const photos = {'en': 'Photos', 'ar': 'صور', 'he': 'תמונות'};
   static const contact = {'en': 'Contact', 'ar': 'تواصل', 'he': 'יצירת קשר'};
+}
+
+/// ===== Footer labels =====
+class FooterContent {
+  static const tagline = {
+    'en': 'Islamic Education & Community Center • Kfar Kama',
+    'ar': 'مركز تعليمي إسلامي ومجتمعي • كفر كما',
+    'he': 'מרכז חינוך אסלאמי וקהילתי • כפר כמא',
+  };
+
+  static const registration = {
+    'en': 'Registered Non-Profit Association (Amuta) #580778629',
+    'ar': 'جمعية غير ربحية مسجلة رقم 580778629',
+    'he': 'עמותה רשומה (ע"ר) מס׳ 580778629',
+  };
+
+  static const rights = {
+    'en': '© Dar al-Fajr Kfar Kama. All rights reserved.',
+    'ar': '© دار الفجر كفر كما. جميع الحقوق محفوظة.',
+    'he': '© דאר אל-פג׳ר כפר כמא. כל הזכויות שמורות.',
+  };
 }

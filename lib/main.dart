@@ -48,10 +48,16 @@ class DarAlFajrApp extends StatelessWidget {
       _ => 'Inter',
     };
 
+    final baseTextTheme = ThemeData.light().textTheme.apply(
+          fontFamily: family,
+          bodyColor: Brand.text,
+          displayColor: Brand.green,
+        );
+
     // Start from a fresh ThemeData with fontFamily set in the constructor
     final base = ThemeData(
       useMaterial3: true,
-      fontFamily: family, // <-- set here
+      fontFamily: family,
       scaffoldBackgroundColor: Brand.bg,
       colorScheme: const ColorScheme(
         brightness: Brightness.light,
@@ -64,7 +70,28 @@ class DarAlFajrApp extends StatelessWidget {
         error: Colors.red,
         onError: Colors.white,
       ),
-      textTheme: ThemeData.light().textTheme.apply(fontFamily: family),
+      textTheme: baseTextTheme.copyWith(
+        headlineMedium: baseTextTheme.headlineMedium?.copyWith(
+          color: Brand.green,
+          fontWeight: FontWeight.w800,
+        ),
+        headlineSmall: baseTextTheme.headlineSmall?.copyWith(
+          color: Brand.green,
+          fontWeight: FontWeight.w700,
+        ),
+        titleLarge: baseTextTheme.titleLarge?.copyWith(
+          color: Brand.green,
+          fontWeight: FontWeight.w700,
+        ),
+        bodyLarge: baseTextTheme.bodyLarge?.copyWith(
+          color: Brand.text,
+          height: 1.6,
+        ),
+        bodyMedium: baseTextTheme.bodyMedium?.copyWith(
+          color: Brand.text,
+          height: 1.5,
+        ),
+      ),
       appBarTheme: const AppBarTheme(
         backgroundColor: Brand.nav,
         foregroundColor: Brand.green,
@@ -97,9 +124,9 @@ class DarAlFajrApp extends StatelessWidget {
       filledButtonTheme: FilledButtonThemeData(
         style: FilledButton.styleFrom(
           backgroundColor: Brand.yellow,
-          foregroundColor: Brand.text,
-          textStyle: const TextStyle(fontWeight: FontWeight.w700),
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          foregroundColor: Brand.green,
+          textStyle: const TextStyle(fontWeight: FontWeight.w800),
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         ),
       ),
@@ -108,7 +135,7 @@ class DarAlFajrApp extends StatelessWidget {
           foregroundColor: Brand.green,
           side: const BorderSide(color: Brand.green),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
         ),
       ),
     );
