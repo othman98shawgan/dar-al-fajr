@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
@@ -247,7 +248,7 @@ class _LaunchIcon extends StatelessWidget {
 
     return IconButton(
       tooltip: tooltip,
-      onPressed: () => launchUrl(Uri.parse(url!), mode: LaunchMode.externalApplication),
+      onPressed: () => _launchExternal(context, url!),
       icon: icon,
       color: Brand.green,
       // Ensure comfy tap targets
@@ -351,7 +352,7 @@ class _BigIconButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return OutlinedButton.icon(
-      onPressed: () => launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication),
+      onPressed: () => _launchExternal(context, url),
       icon: icon,
       label: Text(label, style: TextStyle(color: color, fontWeight: FontWeight.w600)),
       style: OutlinedButton.styleFrom(
@@ -361,5 +362,50 @@ class _BigIconButton extends StatelessWidget {
         minimumSize: Size(expand ? double.infinity : 0, 48), // bigger tap targets
       ),
     );
+  }
+}
+
+Future<void> _launchExternal(BuildContext context, String rawUrl) async {
+  final trimmed = rawUrl.trim();
+  final uri = Uri.tryParse(trimmed);
+  bool ok = false;
+  if (trimmed.isNotEmpty && uri != null) {
+    try {
+      ok = await launchUrl(uri, mode: LaunchMode.externalApplication);
+    } catch (_) {
+      ok = false;
+    }
+  }
+
+  if (!ok && context.mounted) {
+    final locale = LocaleScope.of(context).value;
+    final errMsg = t({
+      'en': 'Could not open the link.',
+      'ar': 'تعذّر فتح الرابط.',
+      'he': 'לא ניתן לפתוח את הקישור.',
+    }, locale);
+    final copyLabel = t({
+      'en': 'Copy',
+      'ar': 'نسخ',
+      'he': 'העתק',
+    }, locale);
+
+    final copyTarget = trimmed.replaceFirst(RegExp(r'^(tel:|mailto:)'), '');
+
+    ScaffoldMessenger.of(context)
+      ..clearSnackBars()
+      ..showSnackBar(
+        SnackBar(
+          content: Text(errMsg),
+          action: copyTarget.isNotEmpty
+              ? SnackBarAction(
+                  label: copyLabel,
+                  onPressed: () {
+                    Clipboard.setData(ClipboardData(text: copyTarget));
+                  },
+                )
+              : null,
+        ),
+      );
   }
 }

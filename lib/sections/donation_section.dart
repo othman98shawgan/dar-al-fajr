@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert'; // LineSplitter
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -86,7 +87,7 @@ class DonationSection extends StatelessWidget {
                       textStyle: ctaTextStyle,
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                     ),
-                    onPressed: donateUrl.isEmpty ? null : () => _launchExternal(donateUrl),
+                    onPressed: donateUrl.isEmpty ? null : () => _launchExternal(context, donateUrl),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -115,7 +116,7 @@ class DonationSection extends StatelessWidget {
                       textStyle: ctaTextStyle,
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                     ),
-                    onPressed: studentUrl.isEmpty ? null : () => _launchExternal(studentUrl),
+                    onPressed: studentUrl.isEmpty ? null : () => _launchExternal(context, studentUrl),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -140,56 +141,16 @@ class DonationSection extends StatelessWidget {
 
         const SizedBox(height: 32),
 
-        // === Always-visible Bank details card ===
+        // === Always-visible Bank details card with granular tap-to-copy ===
         Center(
           child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: bankCardMaxWidth),
-            child: Card(
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(children: [
-                      const Icon(Icons.account_balance, color: Brand.green),
-                      const SizedBox(width: 8),
-                      Text(bankTitle, style: const TextStyle(fontWeight: FontWeight.w700)),
-                    ]),
-                    const SizedBox(height: 16),
-                    // Hebrew block should flow RTL
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Directionality(
-                          textDirection: TextDirection.rtl,
-                          child: SelectableText.rich(
-                            _buildBankDetailsSpan(bankBlock),
-                            style: const TextStyle(fontFamily: 'monospace', height: 1.5),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 12),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        TextButton.icon(
-                          onPressed: () async {
-                            await Clipboard.setData(ClipboardData(text: bankBlock));
-                            if (context.mounted) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(content: Text(copiedMsg)),
-                              );
-                            }
-                          },
-                          icon: const Icon(Icons.copy),
-                          label: Text(copyCta),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
+            child: _BankTransferCard(
+              locale: locale,
+              bankTitle: bankTitle,
+              bankBlock: bankBlock,
+              copyCta: copyCta,
+              copiedMsg: copiedMsg,
             ),
           ),
         ),
@@ -197,14 +158,245 @@ class DonationSection extends StatelessWidget {
     );
   }
 
-  Future<void> _launchExternal(String url) async {
-    final uri = Uri.tryParse(url);
-    if (uri == null) return; // bad URL? silently ignore like before (buttons already guard empty)
-    final ok = await launchUrl(uri, mode: LaunchMode.externalApplication);
-    if (!ok) {
-      // optional: surface failure without the old dialogs
-      debugPrint('Failed to launch $uri');
+  Future<void> _launchExternal(BuildContext context, String url) async {
+    final trimmed = url.trim();
+    final uri = Uri.tryParse(trimmed);
+    bool ok = false;
+    if (trimmed.isNotEmpty && uri != null) {
+      try {
+        ok = await launchUrl(uri, mode: LaunchMode.externalApplication);
+      } catch (_) {
+        ok = false;
+      }
     }
+
+    if (!ok && context.mounted) {
+      final errMsg = t({
+        'en': 'Could not open the payment link.',
+        'ar': 'تعذّر فتح رابط الدفع.',
+        'he': 'לא ניתן לפתוח את קישור התשלום.',
+      }, locale);
+      final copyLabel = t({
+        'en': 'Copy Link',
+        'ar': 'نسخ الرابط',
+        'he': 'העתק קישור',
+      }, locale);
+
+      ScaffoldMessenger.of(context)
+        ..clearSnackBars()
+        ..showSnackBar(
+          SnackBar(
+            content: Text(errMsg),
+            action: trimmed.isNotEmpty
+                ? SnackBarAction(
+                    label: copyLabel,
+                    onPressed: () {
+                      Clipboard.setData(ClipboardData(text: trimmed));
+                    },
+                  )
+                : null,
+          ),
+        );
+    }
+  }
+}
+
+class _BankField {
+  final String label;
+  final String displayValue;
+  final String copyValue;
+
+  const _BankField({
+    required this.label,
+    required this.displayValue,
+    required this.copyValue,
+  });
+}
+
+class _BankTransferCard extends StatefulWidget {
+  final AppLocale locale;
+  final String bankTitle;
+  final String bankBlock;
+  final String copyCta;
+  final String copiedMsg;
+
+  const _BankTransferCard({
+    required this.locale,
+    required this.bankTitle,
+    required this.bankBlock,
+    required this.copyCta,
+    required this.copiedMsg,
+  });
+
+  @override
+  State<_BankTransferCard> createState() => _BankTransferCardState();
+}
+
+class _BankTransferCardState extends State<_BankTransferCard> {
+  final Set<String> _copiedKeys = {};
+  final Map<String, Timer> _timers = {};
+
+  @override
+  void dispose() {
+    for (final timer in _timers.values) {
+      timer.cancel();
+    }
+    super.dispose();
+  }
+
+  List<_BankField> _parseFields(String block) {
+    final lines = const LineSplitter().convert(block);
+    final fields = <_BankField>[];
+    for (final line in lines) {
+      final idx = line.indexOf(':');
+      if (idx == -1) continue;
+      final label = line.substring(0, idx).trim();
+      final displayValue = line.substring(idx + 1).trim();
+      final numMatch = RegExp(r'\d+').firstMatch(displayValue);
+      final copyValue = numMatch != null ? numMatch.group(0)! : displayValue;
+      fields.add(_BankField(
+        label: label,
+        displayValue: displayValue,
+        copyValue: copyValue,
+      ));
+    }
+    return fields;
+  }
+
+  Future<void> _copyWithConfirmation(String key, String textToCopy, {String? snackLabel}) async {
+    await Clipboard.setData(ClipboardData(text: textToCopy));
+    if (!mounted) return;
+
+    _timers[key]?.cancel();
+    setState(() {
+      _copiedKeys.add(key);
+    });
+
+    _timers[key] = Timer(const Duration(seconds: 2), () {
+      if (mounted) {
+        setState(() {
+          _copiedKeys.remove(key);
+        });
+      }
+    });
+
+    final msg = snackLabel != null ? '${widget.copiedMsg} ($snackLabel)' : widget.copiedMsg;
+    ScaffoldMessenger.of(context)
+      ..clearSnackBars()
+      ..showSnackBar(
+        SnackBar(
+          content: Text(msg),
+          duration: const Duration(seconds: 2),
+        ),
+      );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final fields = _parseFields(widget.bankBlock);
+    final isAllCopied = _copiedKeys.contains('all');
+
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                const Icon(Icons.account_balance, color: Brand.green),
+                const SizedBox(width: 8),
+                Text(widget.bankTitle, style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 16)),
+              ],
+            ),
+            const SizedBox(height: 14),
+            Directionality(
+              textDirection: TextDirection.rtl,
+              child: Column(
+                children: [
+                  for (int i = 0; i < fields.length; i++) ...[
+                    _buildGranularRow(fields[i], 'field_$i'),
+                    if (i < fields.length - 1) const SizedBox(height: 8),
+                  ],
+                ],
+              ),
+            ),
+            const SizedBox(height: 12),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                TextButton.icon(
+                  onPressed: () => _copyWithConfirmation('all', widget.bankBlock),
+                  icon: AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 200),
+                    child: Icon(
+                      isAllCopied ? Icons.check_rounded : Icons.copy_rounded,
+                      key: ValueKey<bool>(isAllCopied),
+                      color: Brand.green,
+                      size: 18,
+                    ),
+                  ),
+                  label: Text(
+                    isAllCopied ? widget.copiedMsg : widget.copyCta,
+                    style: const TextStyle(color: Brand.green, fontWeight: FontWeight.w600),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildGranularRow(_BankField field, String key) {
+    final isCopied = _copiedKeys.contains(key);
+
+    return Material(
+      color: isCopied ? Brand.green.withOpacity(0.08) : Brand.bg,
+      borderRadius: BorderRadius.circular(10),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(10),
+        onTap: () => _copyWithConfirmation(key, field.copyValue, snackLabel: field.copyValue),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(
+              color: isCopied ? Brand.green.withOpacity(0.4) : Brand.outline,
+            ),
+          ),
+          child: Row(
+            children: [
+              Expanded(
+                child: Text.rich(
+                  TextSpan(
+                    style: const TextStyle(fontSize: 14.5, height: 1.4, color: Brand.text),
+                    children: [
+                      TextSpan(
+                        text: '${field.label}: ',
+                        style: const TextStyle(fontWeight: FontWeight.w700),
+                      ),
+                      TextSpan(text: field.displayValue),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(width: 8),
+              AnimatedSwitcher(
+                duration: const Duration(milliseconds: 200),
+                child: Icon(
+                  isCopied ? Icons.check_rounded : Icons.copy_rounded,
+                  key: ValueKey<bool>(isCopied),
+                  size: 18,
+                  color: isCopied ? Brand.green : Brand.green.withOpacity(0.75),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }
 
@@ -238,29 +430,4 @@ class _ProviderBadge extends StatelessWidget {
       ),
     );
   }
-}
-
-// === Helpers to bold the "label:" part on each line ===
-TextSpan _buildBankDetailsSpan(String block) {
-  final lines = const LineSplitter().convert(block);
-  return TextSpan(
-    style: const TextStyle(fontFamily: 'monospace', height: 1.4),
-    children: [
-      for (int i = 0; i < lines.length; i++) ..._spansForLine(lines[i], isLast: i == lines.length - 1),
-    ],
-  );
-}
-
-List<TextSpan> _spansForLine(String line, {required bool isLast}) {
-  final idx = line.indexOf(':');
-  if (idx == -1) {
-    return [TextSpan(text: line + (isLast ? '' : '\n'))];
-  }
-  final label = line.substring(0, idx + 1); // include colon
-  final value = line.substring(idx + 1).trimLeft();
-  return [
-    TextSpan(text: '$label ', style: const TextStyle(fontWeight: FontWeight.w700)),
-    TextSpan(text: value),
-    if (!isLast) const TextSpan(text: '\n'),
-  ];
 }
