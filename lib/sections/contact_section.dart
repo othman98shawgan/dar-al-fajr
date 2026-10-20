@@ -14,31 +14,110 @@ class ContactSection extends StatelessWidget {
   Widget build(BuildContext context) {
     final w = MediaQuery.sizeOf(context).width;
     final members = ContactContent.boardMembers;
+    final isMobile = w < 700;
 
     // Columns: 1 (mobile), 2 (tablet), 3 (desktop)
-    final cols = w < 700 ? 1 : (w < 1024 ? 2 : 3);
+    final cols = isMobile ? 1 : (w < 1024 ? 2 : 3);
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(t(ContactContent.title, locale), style: Theme.of(context).textTheme.headlineMedium),
-        const SizedBox(height: 16),
-        GridView.builder(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: cols,
-            crossAxisSpacing: 16,
-            mainAxisSpacing: 16,
-            // Taller cards on mobile for breathing room
-            childAspectRatio: cols == 1 ? 1.6 : 3.0,
-          ),
-          itemCount: members.length,
-          itemBuilder: (context, i) => _MemberCard(member: members[i], locale: locale),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final cardAspectRatio = cols == 1 ? 2.8 : 3.0;
+        final cardWidth = (constraints.maxWidth - (cols - 1) * 16) / cols;
+        final cardHeight = cardWidth / cardAspectRatio;
+
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(t(ContactContent.title, locale), style: Theme.of(context).textTheme.headlineMedium),
+            SizedBox(height: isMobile ? 10 : 12),
+            SizedBox(
+              width: cardWidth,
+              height: cardHeight,
+              child: _OfficeHoursCard(locale: locale),
+            ),
+            SizedBox(height: isMobile ? 16 : 24),
+            GridView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: cols,
+                crossAxisSpacing: 16,
+                mainAxisSpacing: isMobile ? 12 : 16,
+                childAspectRatio: cardAspectRatio,
+              ),
+              itemCount: members.length,
+              itemBuilder: (context, i) => _MemberCard(member: members[i], locale: locale),
+            ),
+            SizedBox(height: isMobile ? 32 : 48),
+            _GlobalContactRow(locale: locale),
+          ],
+        );
+      },
+    );
+  }
+}
+
+class _OfficeHoursCard extends StatelessWidget {
+  final AppLocale locale;
+  const _OfficeHoursCard({required this.locale});
+
+  @override
+  Widget build(BuildContext context) {
+    final w = MediaQuery.sizeOf(context).width;
+    final isMobile = w < 700;
+
+    final title = t(ContactContent.officeHoursTitle, locale);
+    final hours = t(ContactContent.officeHoursValue, locale);
+
+    return Card(
+      child: Padding(
+        padding: EdgeInsets.symmetric(
+          horizontal: 16.0,
+          vertical: isMobile ? 4.0 : 14.0,
         ),
-        const SizedBox(height: 48),
-        _GlobalContactRow(locale: locale),
-      ],
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: Brand.green.withOpacity(0.08),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: const Icon(
+                Icons.access_time_rounded,
+                color: Brand.green,
+                size: 28,
+              ),
+            ),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w700,
+                      fontSize: 18,
+                      color: Brand.green,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    hours,
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Brand.text.withOpacity(0.85),
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
@@ -51,6 +130,7 @@ class _MemberCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final w = MediaQuery.sizeOf(context).width;
+    final isMobile = w < 700;
     final isNarrow = w < 500; // stack actions on very small phones
 
     // Check validity before building widgets
@@ -71,7 +151,7 @@ class _MemberCard extends StatelessWidget {
             if (hasPhone)
               _LaunchIcon(
                 tooltip: t(ContactContent.call, locale),
-                icon: Icons.call,
+                icon: const Icon(Icons.call),
                 url: member.phone,
               ),
             // Only show spacer if BOTH are present
@@ -79,7 +159,7 @@ class _MemberCard extends StatelessWidget {
             if (hasWhatsapp)
               _LaunchIcon(
                 tooltip: t(ContactContent.whatsapp, locale),
-                icon: FontAwesomeIcons.whatsapp,
+                icon: const FaIcon(FontAwesomeIcons.whatsapp),
                 url: member.whatsapp,
               ),
           ],
@@ -92,13 +172,13 @@ class _MemberCard extends StatelessWidget {
             if (hasPhone)
               _LaunchIcon(
                 tooltip: t(ContactContent.call, locale),
-                icon: Icons.call,
+                icon: const Icon(Icons.call),
                 url: member.phone,
               ),
             if (hasWhatsapp)
               _LaunchIcon(
                 tooltip: t(ContactContent.whatsapp, locale),
-                icon: FontAwesomeIcons.whatsapp,
+                icon: const FaIcon(FontAwesomeIcons.whatsapp),
                 url: member.whatsapp,
               ),
           ],
@@ -108,7 +188,10 @@ class _MemberCard extends StatelessWidget {
 
     return Card(
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 14.0),
+        padding: EdgeInsets.symmetric(
+          horizontal: 16.0,
+          vertical: isMobile ? 4.0 : 14.0,
+        ),
         child: Row(
           children: [
             CircleAvatar(
@@ -149,7 +232,7 @@ class _MemberCard extends StatelessWidget {
 
 class _LaunchIcon extends StatelessWidget {
   final String tooltip;
-  final IconData icon;
+  final Widget icon;
   final String? url;
   const _LaunchIcon({required this.tooltip, required this.icon, required this.url});
 
@@ -165,7 +248,7 @@ class _LaunchIcon extends StatelessWidget {
     return IconButton(
       tooltip: tooltip,
       onPressed: () => launchUrl(Uri.parse(url!), mode: LaunchMode.externalApplication),
-      icon: Icon(icon),
+      icon: icon,
       color: Brand.green,
       // Ensure comfy tap targets
       constraints: const BoxConstraints(minWidth: 48, minHeight: 48),
@@ -186,28 +269,35 @@ class _GlobalContactRow extends StatelessWidget {
 
     final items = [
       _BigIconButton(
-        icon: FontAwesomeIcons.youtube,
+        icon: const FaIcon(FontAwesomeIcons.instagram, color: Color(0xFFE1306C)),
+        label: t(ContactContent.instagram, locale),
+        url: ContentConfig.instagramUrl,
+        color: const Color(0xFFE1306C),
+        expand: isMobile,
+      ),
+      _BigIconButton(
+        icon: const FaIcon(FontAwesomeIcons.youtube, color: Color(0xFFFF0000)),
         label: t(ContactContent.youtube, locale),
         url: ContentConfig.youtubeUrl,
         color: const Color(0xFFFF0000),
         expand: isMobile,
       ),
       _BigIconButton(
-        icon: Icons.call,
+        icon: const Icon(Icons.call, color: Brand.green),
         label: t(ContactContent.phone, locale),
         url: ContentConfig.contactPhone,
         color: Brand.green,
         expand: isMobile,
       ),
       _BigIconButton(
-        icon: FontAwesomeIcons.whatsapp,
+        icon: const FaIcon(FontAwesomeIcons.whatsapp, color: Color(0xFF25D366)),
         label: t(ContactContent.whatsapp, locale),
         url: ContentConfig.whatsappLink,
         color: const Color(0xFF25D366),
         expand: isMobile,
       ),
       _BigIconButton(
-        icon: Icons.email_outlined,
+        icon: const Icon(Icons.email_outlined, color: Brand.green),
         label: t(ContactContent.email, locale),
         url: ContentConfig.contactEmail,
         color: Brand.green,
@@ -244,7 +334,7 @@ class _GlobalContactRow extends StatelessWidget {
 }
 
 class _BigIconButton extends StatelessWidget {
-  final IconData icon;
+  final Widget icon;
   final String label;
   final String url;
   final Color color;
@@ -262,7 +352,7 @@ class _BigIconButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return OutlinedButton.icon(
       onPressed: () => launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication),
-      icon: Icon(icon, color: color),
+      icon: icon,
       label: Text(label, style: TextStyle(color: color, fontWeight: FontWeight.w600)),
       style: OutlinedButton.styleFrom(
         side: BorderSide(color: color),
