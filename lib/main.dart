@@ -79,7 +79,7 @@ class DarAlFajrApp extends StatelessWidget {
         ),
         shape: Border(bottom: BorderSide(color: Brand.outline, width: 1)),
       ),
-      cardTheme: const CardTheme(
+      cardTheme: const CardThemeData(
         color: Brand.card,
         elevation: 0,
         margin: EdgeInsets.zero,

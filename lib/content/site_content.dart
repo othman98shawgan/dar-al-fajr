@@ -28,6 +28,7 @@ class ContentConfig {
   static const whatsappLink = 'https://wa.me/972512875576';
   static const contactEmail = 'mailto:daralfajerkfarkama@gmail.com';
   static const youtubeUrl = 'https://youtube.com/@Dar-al-Fajr';
+  static const instagramUrl = 'https://www.instagram.com/dar.alfajr/';
 }
 
 /// ===== Home section =====
@@ -45,17 +46,17 @@ class HomeContent {
   };
 
   static Map<String, String> statsLabels(AppLocale l) => {
-        'students': t({'en': 'Students', 'ar': 'طالب', 'he': 'תלמידים'}, l),
+        'students': t({'en': 'Students', 'ar': 'طالب وطالبة', 'he': 'תלמידים ותלמידות'}, l),
         'weeklyClasses': t({'en': 'Weekly Classes', 'ar': 'درس أسبوعي', 'he': 'שיעורים שבועיים'}, l),
         'volunteers': t({'en': 'Volunteers', 'ar': 'متطوع', 'he': 'מתנדבים'}, l),
         'years': t({'en': 'Years Serving', 'ar': 'سنوات خدمة', 'he': 'שנות פעילות'}, l),
       };
 
   static const statsValues = {
-    'students': '110',
-    'weeklyClasses': '60',
-    'volunteers': '30',
-    'years': '2',
+    'students': '183',
+    'weeklyClasses': '105',
+    'volunteers': '45',
+    'years': '3',
   };
 
   static String donateCta(AppLocale l) => t(
@@ -74,11 +75,11 @@ class AboutContent {
 
   static const description = {
     'en':
-        'Dar al-Fajr is an Islamic education center in Kfar Kama, dedicated to teaching children and youth the reading, memorization, and proper recitation of the Qur’an. In addition to Qur’an studies, we hold weekly lessons that focus on Islamic values, faith, and character - covering topics such as fiqh, ʿaqīdah, and sīrah. Today, Dar al-Fajr serves over 110 students across multiple levels, from beginners to advanced. Our mission is clear: to nurture a generation that loves the Qur’an, understands its message, and lives by its guidance.',
+        'Dar al-Fajr is an Islamic education center in Kfar Kama, dedicated to teaching children and youth the reading, memorization, and proper recitation of the Qur’an. In addition to Qur’an studies, we hold weekly lessons that focus on Islamic values, faith, and character - covering topics such as fiqh, ʿaqīdah, and sīrah. Today, Dar al-Fajr serves over 183 students (boys and girls) across multiple levels, from beginners to advanced. Our mission is clear: to nurture a generation that loves the Qur’an, understands its message, and lives by its guidance.',
     'ar':
-        'دار الفجر هو مركز تعليمي إسلامي في كفر كما، يُعنى بتعليم الأطفال والناشئة قراءة القرآن الكريم وتجويده وحفظه. إلى جانب دروس القرآن، نقيم دروسًا أسبوعية تُعنى بالقيم الإسلامية والإيمان والأخلاق، وتشمل موضوعات في الفقه والعقيدة والسيرة النبوية. يضم المركز اليوم أكثر من 110 طالبًا وطالبة في مستويات مختلفة، من المبتدئين إلى المتقدمين. ورسالتنا واضحة: تربية جيلٍ يحبّ القرآن، يفهم معانيه ويعيش بهديه.',
+        'دار الفجر هو مركز تعليمي إسلامي في كفر كما، يُعنى بتعليم الأطفال والناشئة قراءة القرآن الكريم وتجويده وحفظه. إلى جانب دروس القرآن، نقيم دروسًا أسبوعية تُعنى بالقيم الإسلامية والإيمان والأخلاق، وتشمل موضوعات في الفقه والعقيدة والسيرة النبوية. يضم المركز اليوم أكثر من 183 طالبًا وطالبة في مستويات مختلفة، من المبتدئين إلى المتقدمين. ورسالتنا واضحة: تربية جيلٍ يحبّ القرآن، يفهم معانيه ويعيش بهديه.',
     'he':
-        'דאר אל־פג׳ר הוא מרכז חינוך אסלאמי בכפר כמא, שמוקדש ללימוד קריאה, שינון ותגויד של הקוראן לילדים ולנוער. בנוסף ללימודי הקוראן, אנו מקיימים שיעורים שבועיים בנושאים של ערכים אסלאמיים, אמונה ומידות טובות - כגון פִקְה, עַקִידָה וסִירַה. כיום לומדים במרכז למעלה מ־110 תלמידים ברמות שונות - מהמתחילים ועד המתקדמים. החזון שלנו ברור: לטפח דור שאוהב את הקוראן, מבין את משמעותו וחי לאורו.',
+        'דאר אל־פג׳ר הוא מרכז חינוך אסלאמי בכפר כמא, שמוקדש ללימוד קריאה, שינון ותגויד של הקוראן לילדים ולנוער. בנוסף ללימודי הקוראן, אנו מקיימים שיעורים שבועיים בנושאים של ערכים אסלאמיים, אמונה ומידות טובות - כגון פִקְה, עַקִידָה וסִירַה. כיום לומדים במרכז למעלה מ־183 תלמידים ותלמידות ברמות שונות - מהמתחילים ועד המתקדמים. החזון שלנו ברור: לטפח דור שאוהב את הקוראן, מבין את משמעותו וחי לאורו.',
   };
 
   static List<String> pillars(AppLocale l) => [
@@ -103,9 +104,9 @@ class DonationContent {
   };
 
   static const cardCta = {
-    'en': 'Donate by Card',
-    'ar': 'تبرّع بالبطاقة',
-    'he': 'תרומה בכרטיס אשראי',
+    'he': 'תרומה באשראי / הוראת קבע',
+    'ar': 'تبرّع بالبطاقة / تبرّع شهري',
+    'en': 'Donate by Card / Monthly',
   };
 
   static const studentCta = {
@@ -182,9 +183,22 @@ class ContactContent {
     'he': 'צרו קשר',
   };
 
+  static const officeHoursTitle = {
+    'en': 'Secretariat Hours',
+    'ar': 'ساعات السكرتارية',
+    'he': 'שעות מזכירות',
+  };
+
+  static const officeHoursValue = {
+    'en': 'Sunday – Thursday, 16:00 – 18:00',
+    'ar': 'الأحد – الخميس، 16:00 – 18:00',
+    'he': 'ראשון – חמישי, 16:00 – 18:00',
+  };
+
   static const call = {'en': 'Call', 'ar': 'اتصال', 'he': 'שיחה'};
   static const whatsapp = {'en': 'WhatsApp', 'ar': 'واتساب', 'he': 'וואטסאפ'};
   static const youtube = {'en': 'YouTube', 'ar': 'يوتيوب', 'he': 'יוטיוב'};
+  static const instagram = {'en': 'Instagram', 'ar': 'انستاجرام', 'he': 'אינסטגרם'};
   static const phone = {'en': 'Phone', 'ar': 'هاتف', 'he': 'טלפון'};
   static const email = {'en': 'Email', 'ar': 'بريد إلكتروني', 'he': 'אימייל'};
 
@@ -202,12 +216,6 @@ class ContactContent {
       whatsapp: 'https://wa.me/972507864552',
     ),
     Member(
-      name: {'en': 'Noah Thawko', 'ar': 'نوح تحاوخو', 'he': 'נוח תחאוכו'},
-      role: {'en': 'Board member', 'ar': 'عضو إدارة', 'he': 'חבר הנהלה'},
-      phone: 'tel:+972506825975',
-      whatsapp: 'https://wa.me/972506825975',
-    ),
-    Member(
       name: {'en': 'Hani Ashmoz', 'ar': 'هاني أشموز', 'he': 'האני אשמוז'},
       role: {'en': 'Board member', 'ar': 'عضو إدارة', 'he': 'חבר הנהלה'},
       phone: 'tel:+972505213482',
@@ -218,6 +226,12 @@ class ContactContent {
       role: {'en': 'Board member', 'ar': 'عضو إدارة', 'he': 'חבר הנהלה'},
       phone: 'tel:+972543046004',
       whatsapp: 'https://wa.me/972543046004',
+    ),
+    Member(
+      name: {'en': 'Tawfek Hatukai', 'ar': 'توفيق حاتوقاي', 'he': 'תאופיק חתוקאי'},
+      role: {'en': 'Board member', 'ar': 'عضو إدارة', 'he': 'חבר הנהלה'},
+      phone: 'tel:+972526034686',
+      whatsapp: 'https://wa.me/972526034686',
     ),
     Member(
       name: {'en': 'Othman Shawgan', 'ar': 'عثمان شوجن', 'he': "עות'מאן שוגן"},
