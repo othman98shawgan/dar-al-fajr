@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
@@ -13,43 +14,99 @@ class ContactSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final w = MediaQuery.sizeOf(context).width;
-    final members = ContactContent.boardMembers;
+    final boardMembers = ContactContent.boardMembers;
+    final keyPeople = ContactContent.keyPeople;
     final isMobile = w < 700;
+    final tt = Theme.of(context).textTheme;
 
     // Columns: 1 (mobile), 2 (tablet), 3 (desktop)
     final cols = isMobile ? 1 : (w < 1024 ? 2 : 3);
 
     return LayoutBuilder(
       builder: (context, constraints) {
-        final cardAspectRatio = cols == 1 ? 2.8 : 3.0;
-        final cardWidth = (constraints.maxWidth - (cols - 1) * 16) / cols;
-        final cardHeight = cardWidth / cardAspectRatio;
+        const spacing = 16.0;
+        final cardWidth = cols == 1 ? constraints.maxWidth : (constraints.maxWidth - (cols - 1) * spacing) / cols;
 
         return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Text(t(ContactContent.title, locale), style: Theme.of(context).textTheme.headlineMedium),
-            SizedBox(height: isMobile ? 10 : 12),
-            SizedBox(
-              width: cardWidth,
-              height: cardHeight,
-              child: _OfficeHoursCard(locale: locale),
+            // Main Section Header in Deep Teal (#1D6363)
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Container(
+                  width: 44,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: Brand.yellow,
+                    borderRadius: BorderRadius.circular(999),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  t(ContactContent.title, locale),
+                  textAlign: TextAlign.center,
+                  style: tt.headlineMedium?.copyWith(
+                    color: Brand.green,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 640),
+                  child: Text(
+                    t(ContactContent.subtitle, locale),
+                    textAlign: TextAlign.center,
+                    style: tt.bodyLarge?.copyWith(color: Brand.text),
+                  ),
+                ),
+              ],
             ),
-            SizedBox(height: isMobile ? 16 : 24),
-            GridView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: cols,
-                crossAxisSpacing: 16,
-                mainAxisSpacing: isMobile ? 12 : 16,
-                childAspectRatio: cardAspectRatio,
-              ),
-              itemCount: members.length,
-              itemBuilder: (context, i) => _MemberCard(member: members[i], locale: locale),
+
+            SizedBox(height: isMobile ? 24 : 32),
+
+            // Card 1: Secretariat Hours & Direct Contact Banner
+            _SecretariatBanner(locale: locale, isMobile: isMobile),
+
+            SizedBox(height: isMobile ? 32 : 44),
+
+            // Card / Sub-Section 2: Amuta Board Members
+            _SubSectionHeader(
+              title: t(ContactContent.boardSectionTitle, locale),
+              icon: Icons.groups_rounded,
             ),
-            SizedBox(height: isMobile ? 32 : 48),
-            _GlobalContactRow(locale: locale),
+            const SizedBox(height: 16),
+            Wrap(
+              spacing: spacing,
+              runSpacing: spacing,
+              children: [
+                for (final member in boardMembers)
+                  SizedBox(
+                    width: cardWidth,
+                    child: _MemberCard(member: member, locale: locale),
+                  ),
+              ],
+            ),
+
+            SizedBox(height: isMobile ? 32 : 44),
+
+            // Card / Sub-Section 3: Key People in the Center
+            _SubSectionHeader(
+              title: t(ContactContent.keyPeopleSectionTitle, locale),
+              icon: Icons.badge_outlined,
+            ),
+            const SizedBox(height: 16),
+            Wrap(
+              spacing: spacing,
+              runSpacing: spacing,
+              children: [
+                for (final member in keyPeople)
+                  SizedBox(
+                    width: cardWidth,
+                    child: _MemberCard(member: member, locale: locale),
+                  ),
+              ],
+            ),
           ],
         );
       },
@@ -57,68 +114,217 @@ class ContactSection extends StatelessWidget {
   }
 }
 
-class _OfficeHoursCard extends StatelessWidget {
-  final AppLocale locale;
-  const _OfficeHoursCard({required this.locale});
+class _SubSectionHeader extends StatelessWidget {
+  final String title;
+  final IconData icon;
+
+  const _SubSectionHeader({
+    required this.title,
+    required this.icon,
+  });
 
   @override
   Widget build(BuildContext context) {
-    final w = MediaQuery.sizeOf(context).width;
-    final isMobile = w < 700;
+    final tt = Theme.of(context).textTheme;
 
+    return Row(
+      children: [
+        Container(
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: Brand.altBg,
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(color: Brand.outline),
+          ),
+          child: Icon(icon, color: Brand.green, size: 20),
+        ),
+        const SizedBox(width: 12),
+        Text(
+          title,
+          style: tt.titleLarge?.copyWith(
+            fontWeight: FontWeight.w800,
+            color: Brand.green,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _SecretariatBanner extends StatelessWidget {
+  final AppLocale locale;
+  final bool isMobile;
+
+  const _SecretariatBanner({
+    required this.locale,
+    required this.isMobile,
+  });
+
+  @override
+  Widget build(BuildContext context) {
     final title = t(ContactContent.officeHoursTitle, locale);
     final hours = t(ContactContent.officeHoursValue, locale);
+    final tt = Theme.of(context).textTheme;
 
-    return Card(
-      child: Padding(
-        padding: EdgeInsets.symmetric(
-          horizontal: 16.0,
-          vertical: isMobile ? 4.0 : 14.0,
-        ),
-        child: Row(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(10),
-              decoration: BoxDecoration(
-                color: Brand.green.withOpacity(0.08),
-                borderRadius: BorderRadius.circular(10),
+    final contactButtons = [
+      _DirectContactButton(
+        icon: const FaIcon(FontAwesomeIcons.whatsapp, size: 18, color: Color(0xFF25D366)),
+        label: t(ContactContent.whatsapp, locale),
+        url: ContentConfig.whatsappLink,
+        iconColor: const Color(0xFF25D366),
+        expand: isMobile,
+      ),
+      _DirectContactButton(
+        icon: const Icon(Icons.call_rounded, size: 18, color: Color(0xFF1D6363)),
+        label: t(ContactContent.phone, locale),
+        url: ContentConfig.contactPhone,
+        iconColor: const Color(0xFF1D6363),
+        expand: isMobile,
+      ),
+      _DirectContactButton(
+        icon: const Icon(Icons.email_outlined, size: 18, color: Color(0xFFEA4335)),
+        label: t(ContactContent.email, locale),
+        url: ContentConfig.contactEmail,
+        iconColor: const Color(0xFFEA4335),
+        expand: isMobile,
+      ),
+      _DirectContactButton(
+        icon: const FaIcon(FontAwesomeIcons.instagram, size: 18, color: Color(0xFFE1306C)),
+        label: t(ContactContent.instagram, locale),
+        url: ContentConfig.instagramUrl,
+        iconColor: const Color(0xFFE1306C),
+        expand: isMobile,
+      ),
+      _DirectContactButton(
+        icon: const FaIcon(FontAwesomeIcons.youtube, size: 18, color: Color(0xFFFF0000)),
+        label: t(ContactContent.youtube, locale),
+        url: ContentConfig.youtubeUrl,
+        iconColor: const Color(0xFFFF0000),
+        expand: isMobile,
+      ),
+    ].where((b) => b.url.isNotEmpty).toList();
+
+    return Container(
+      decoration: BoxDecoration(
+        color: Brand.altBg,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: Brand.green.withValues(alpha: 0.25), width: 1.5),
+        boxShadow: const [
+          BoxShadow(
+            color: Color(0x0A1D6363),
+            blurRadius: 14,
+            offset: Offset(0, 6),
+          ),
+        ],
+      ),
+      padding: EdgeInsets.all(isMobile ? 20 : 28),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Container(
+                width: 54,
+                height: 54,
+                decoration: BoxDecoration(
+                  color: Brand.green,
+                  borderRadius: BorderRadius.circular(14),
+                ),
+                child: const Icon(
+                  Icons.access_time_filled_rounded,
+                  color: Brand.yellow,
+                  size: 28,
+                ),
               ),
-              child: const Icon(
-                Icons.access_time_rounded,
-                color: Brand.green,
-                size: 28,
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: tt.titleMedium?.copyWith(
+                        fontWeight: FontWeight.w800,
+                        color: Brand.green,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      hours,
+                      style: tt.titleLarge?.copyWith(
+                        fontWeight: FontWeight.w800,
+                        color: Brand.text,
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ),
-            const SizedBox(width: 14),
-            Expanded(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.w700,
-                      fontSize: 18,
-                      color: Brand.green,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    hours,
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: Brand.text.withOpacity(0.85),
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
+            ],
+          ),
+          const SizedBox(height: 20),
+          const Divider(height: 1, color: Brand.outline),
+          const SizedBox(height: 20),
+          if (isMobile)
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                for (int i = 0; i < contactButtons.length; i++) ...[
+                  contactButtons[i],
+                  if (i < contactButtons.length - 1) const SizedBox(height: 10),
                 ],
-              ),
+              ],
+            )
+          else
+            Wrap(
+              spacing: 12,
+              runSpacing: 12,
+              alignment: WrapAlignment.start,
+              children: contactButtons,
             ),
-          ],
-        ),
+        ],
       ),
     );
+  }
+}
+
+class _DirectContactButton extends StatelessWidget {
+  final Widget icon;
+  final String label;
+  final String url;
+  final Color? iconColor;
+  final bool expand;
+
+  const _DirectContactButton({
+    required this.icon,
+    required this.label,
+    required this.url,
+    this.iconColor,
+    this.expand = false,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final borderColor = iconColor != null ? iconColor!.withValues(alpha: 0.35) : Brand.outline;
+
+    final child = OutlinedButton.icon(
+      onPressed: () => _launchExternal(context, url),
+      style: OutlinedButton.styleFrom(
+        backgroundColor: Brand.card,
+        foregroundColor: Brand.green,
+        side: BorderSide(color: borderColor, width: 1.5),
+        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        minimumSize: Size(expand ? double.infinity : 0, 48),
+      ),
+      icon: icon,
+      label: Text(
+        label,
+        style: const TextStyle(color: Brand.green, fontWeight: FontWeight.w700),
+      ),
+    );
+
+    return expand ? SizedBox(width: double.infinity, child: child) : child;
   }
 }
 
@@ -129,95 +335,98 @@ class _MemberCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final w = MediaQuery.sizeOf(context).width;
-    final isMobile = w < 700;
-    final isNarrow = w < 500; // stack actions on very small phones
-
-    // Check validity before building widgets
     final hasPhone = member.phone != null && member.phone!.trim().isNotEmpty;
     final hasWhatsapp = member.whatsapp != null && member.whatsapp!.trim().isNotEmpty;
+    final tt = Theme.of(context).textTheme;
 
-    Widget? actionButtons;
-
-    // If neither exists, we render an empty box
-    if (!hasPhone && !hasWhatsapp) {
-      actionButtons = const SizedBox.shrink();
-    } else {
-      if (isNarrow) {
-        // Mobile (Stacked)
-        actionButtons = Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            if (hasPhone)
-              _LaunchIcon(
-                tooltip: t(ContactContent.call, locale),
-                icon: const Icon(Icons.call),
-                url: member.phone,
-              ),
-            // Only show spacer if BOTH are present
-            if (hasPhone && hasWhatsapp) const SizedBox(height: 6),
-            if (hasWhatsapp)
-              _LaunchIcon(
-                tooltip: t(ContactContent.whatsapp, locale),
-                icon: const FaIcon(FontAwesomeIcons.whatsapp),
-                url: member.whatsapp,
-              ),
-          ],
-        );
-      } else {
-        // Desktop/Tablet (Row)
-        actionButtons = Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            if (hasPhone)
-              _LaunchIcon(
-                tooltip: t(ContactContent.call, locale),
-                icon: const Icon(Icons.call),
-                url: member.phone,
-              ),
-            if (hasWhatsapp)
-              _LaunchIcon(
-                tooltip: t(ContactContent.whatsapp, locale),
-                icon: const FaIcon(FontAwesomeIcons.whatsapp),
-                url: member.whatsapp,
-              ),
-          ],
-        );
-      }
-    }
-
-    return Card(
-      child: Padding(
-        padding: EdgeInsets.symmetric(
-          horizontal: 16.0,
-          vertical: isMobile ? 4.0 : 14.0,
-        ),
-        child: Row(
-          children: [
-            CircleAvatar(
-              radius: 22,
-              backgroundColor: Brand.bg,
-              child: Text(
-                _initials(member.nameFor('en')),
-                style: const TextStyle(color: Brand.green, fontWeight: FontWeight.w700),
+    return Container(
+      decoration: BoxDecoration(
+        color: Brand.card,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Brand.outline),
+        boxShadow: const [
+          BoxShadow(
+            color: Color(0x061D6363),
+            blurRadius: 10,
+            offset: Offset(0, 4),
+          ),
+        ],
+      ),
+      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 18),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Container(
+            width: 48,
+            height: 48,
+            decoration: BoxDecoration(
+              color: Brand.altBg,
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(color: Brand.outline),
+            ),
+            alignment: Alignment.center,
+            child: Text(
+              _initials(member.nameFor('en')),
+              style: const TextStyle(
+                color: Brand.green,
+                fontWeight: FontWeight.w800,
+                fontSize: 15,
               ),
             ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(member.nameFor(locale), style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 16)),
-                  const SizedBox(height: 2),
-                  Text(member.roleFor(locale), style: TextStyle(color: Colors.black.withOpacity(0.7))),
-                ],
-              ),
+          ),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  member.nameFor(locale),
+                  style: tt.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w800,
+                    color: Brand.green,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                  decoration: BoxDecoration(
+                    color: Brand.altBg,
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                  child: Text(
+                    member.roleFor(locale),
+                    style: tt.labelMedium?.copyWith(
+                      color: Brand.textMuted,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              ],
             ),
+          ),
+          if (hasPhone || hasWhatsapp) ...[
             const SizedBox(width: 8),
-            actionButtons,
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (hasPhone)
+                  _LaunchIcon(
+                    tooltip: t(ContactContent.call, locale),
+                    icon: const Icon(Icons.call_rounded, size: 20),
+                    url: member.phone,
+                  ),
+                if (hasPhone && hasWhatsapp) const SizedBox(width: 6),
+                if (hasWhatsapp)
+                  _LaunchIcon(
+                    tooltip: t(ContactContent.whatsapp, locale),
+                    icon: const FaIcon(FontAwesomeIcons.whatsapp, size: 20, color: Color(0xFF25D366)),
+                    url: member.whatsapp,
+                  ),
+              ],
+            ),
           ],
-        ),
+        ],
       ),
     );
   }
@@ -239,127 +448,75 @@ class _LaunchIcon extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isEnabled = url != null && url!.trim().isNotEmpty;
-
-    // If no URL, hide the widget entirely
     if (!isEnabled) {
       return const SizedBox.shrink();
     }
 
-    return IconButton(
-      tooltip: tooltip,
-      onPressed: () => launchUrl(Uri.parse(url!), mode: LaunchMode.externalApplication),
-      icon: icon,
-      color: Brand.green,
-      // Ensure comfy tap targets
-      constraints: const BoxConstraints(minWidth: 48, minHeight: 48),
-      splashRadius: 24,
-    );
-  }
-}
-
-/// Bottom global contacts: YouTube, phone, WhatsApp, email
-class _GlobalContactRow extends StatelessWidget {
-  final AppLocale locale;
-  const _GlobalContactRow({required this.locale});
-
-  @override
-  Widget build(BuildContext context) {
-    final w = MediaQuery.sizeOf(context).width;
-    final isMobile = w < 700;
-
-    final items = [
-      _BigIconButton(
-        icon: const FaIcon(FontAwesomeIcons.instagram, color: Color(0xFFE1306C)),
-        label: t(ContactContent.instagram, locale),
-        url: ContentConfig.instagramUrl,
-        color: const Color(0xFFE1306C),
-        expand: isMobile,
-      ),
-      _BigIconButton(
-        icon: const FaIcon(FontAwesomeIcons.youtube, color: Color(0xFFFF0000)),
-        label: t(ContactContent.youtube, locale),
-        url: ContentConfig.youtubeUrl,
-        color: const Color(0xFFFF0000),
-        expand: isMobile,
-      ),
-      _BigIconButton(
-        icon: const Icon(Icons.call, color: Brand.green),
-        label: t(ContactContent.phone, locale),
-        url: ContentConfig.contactPhone,
-        color: Brand.green,
-        expand: isMobile,
-      ),
-      _BigIconButton(
-        icon: const FaIcon(FontAwesomeIcons.whatsapp, color: Color(0xFF25D366)),
-        label: t(ContactContent.whatsapp, locale),
-        url: ContentConfig.whatsappLink,
-        color: const Color(0xFF25D366),
-        expand: isMobile,
-      ),
-      _BigIconButton(
-        icon: const Icon(Icons.email_outlined, color: Brand.green),
-        label: t(ContactContent.email, locale),
-        url: ContentConfig.contactEmail,
-        color: Brand.green,
-        expand: isMobile,
-      ),
-    ].where((b) => b.url.isNotEmpty).toList();
-
-    if (isMobile) {
-      // Full-width stacked buttons on mobile (thumb-friendly)
-      return Column(
-        children: [
-          for (final b in items)
-            Padding(
-              padding: const EdgeInsets.only(bottom: 12.0),
-              child: ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 480),
-                child: SizedBox(width: double.infinity, child: b),
+    return Tooltip(
+      message: tooltip,
+      child: Material(
+        color: Brand.altBg,
+        borderRadius: BorderRadius.circular(10),
+        child: InkWell(
+          borderRadius: BorderRadius.circular(10),
+          onTap: () => _launchExternal(context, url!),
+          child: SizedBox(
+            width: 42,
+            height: 42,
+            child: Center(
+              child: IconTheme(
+                data: const IconThemeData(color: Brand.green, size: 20),
+                child: icon,
               ),
             ),
-        ],
-      );
-    }
-
-    // Horizontal row on tablet/desktop
-    return Center(
-      child: Wrap(
-        spacing: 16,
-        runSpacing: 12,
-        alignment: WrapAlignment.center,
-        children: items,
+          ),
+        ),
       ),
     );
   }
 }
 
-class _BigIconButton extends StatelessWidget {
-  final Widget icon;
-  final String label;
-  final String url;
-  final Color color;
-  final bool expand; // full-width on mobile when true
+Future<void> _launchExternal(BuildContext context, String rawUrl) async {
+  final trimmed = rawUrl.trim();
+  final uri = Uri.tryParse(trimmed);
+  bool ok = false;
+  if (trimmed.isNotEmpty && uri != null) {
+    try {
+      ok = await launchUrl(uri, mode: LaunchMode.externalApplication);
+    } catch (_) {
+      ok = false;
+    }
+  }
 
-  const _BigIconButton({
-    required this.icon,
-    required this.label,
-    required this.url,
-    this.color = Brand.green,
-    this.expand = false,
-  });
+  if (!ok && context.mounted) {
+    final locale = LocaleScope.of(context).value;
+    final errMsg = t({
+      'en': 'Could not open the link.',
+      'ar': 'تعذّر فتح الرابط.',
+      'he': 'לא ניתן לפתוח את הקישור.',
+    }, locale);
+    final copyLabel = t({
+      'en': 'Copy',
+      'ar': 'نسخ',
+      'he': 'העתק',
+    }, locale);
 
-  @override
-  Widget build(BuildContext context) {
-    return OutlinedButton.icon(
-      onPressed: () => launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication),
-      icon: icon,
-      label: Text(label, style: TextStyle(color: color, fontWeight: FontWeight.w600)),
-      style: OutlinedButton.styleFrom(
-        side: BorderSide(color: color),
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        minimumSize: Size(expand ? double.infinity : 0, 48), // bigger tap targets
-      ),
-    );
+    final copyTarget = trimmed.replaceFirst(RegExp(r'^(tel:|mailto:)'), '');
+
+    ScaffoldMessenger.of(context)
+      ..clearSnackBars()
+      ..showSnackBar(
+        SnackBar(
+          content: Text(errMsg),
+          action: copyTarget.isNotEmpty
+              ? SnackBarAction(
+                  label: copyLabel,
+                  onPressed: () {
+                    Clipboard.setData(ClipboardData(text: copyTarget));
+                  },
+                )
+              : null,
+        ),
+      );
   }
 }

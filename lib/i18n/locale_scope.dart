@@ -98,41 +98,49 @@ class LocaleController extends ChangeNotifier {
   Future<void> _bootstrap() async {
     AppLocale? chosen;
 
-    // 1) URL path (/:locale/...)
-    final fromPath = _pathLocaleWeb();
-    if (fromPath != null) {
-      chosen = _normalize(fromPath);
-    } else {
-      // 2) Query param ?lang=xx (web only)
-      AppLocale? fromUrl;
+    try {
+      // 1) URL path (/:locale/...)
+      final fromPath = _pathLocaleWeb();
+      if (fromPath != null) {
+        chosen = _normalize(fromPath);
+      } else {
+        // 2) Query param ?lang=xx (web only)
+        AppLocale? fromUrl;
+        if (kIsWeb) {
+          final code = Uri.base.queryParameters['lang'];
+          if (code != null && code.isNotEmpty) fromUrl = _normalize(code);
+        }
+
+        // 3) Shared prefs (guarded so storage errors never block boot)
+        String? fromPrefs;
+        try {
+          final sp = await SharedPreferences.getInstance();
+          fromPrefs = sp.getString(_kPrefKey);
+        } catch (_) {
+          // ignore storage failure
+        }
+
+        chosen = fromUrl ?? fromPrefs ?? _value; // fall back to initial
+      }
+
+      // Apply if different
+      final normalized = _normalize(chosen, fallback: _value);
+      final changed = normalized != _value;
+      _value = normalized;
+
+      // Persist and URL-rewrite if needed
       if (kIsWeb) {
-        final code = Uri.base.queryParameters['lang'];
-        if (code != null && code.isNotEmpty) fromUrl = _normalize(code);
+        // Ensure URL carries the locale in first path segment
+        final hasPathLocale = _pathLocaleWeb() != null;
+        if (!hasPathLocale || changed) {
+          _rewriteUrlWithLocaleWeb(_value);
+        }
       }
-
-      // 3) Shared prefs
-      final sp = await SharedPreferences.getInstance();
-      final fromPrefs = sp.getString(_kPrefKey);
-
-      chosen = fromUrl ?? fromPrefs ?? _value; // fall back to initial
+    } finally {
+      _loaded = true;
+      notifyListeners();
     }
 
-    // Apply if different
-    final normalized = _normalize(chosen, fallback: _value);
-    final changed = normalized != _value;
-    _value = normalized;
-
-    // Persist and URL-rewrite if needed
-    if (kIsWeb) {
-      // Ensure URL carries the locale in first path segment
-      final hasPathLocale = _pathLocaleWeb() != null;
-      if (!hasPathLocale || changed) {
-        _rewriteUrlWithLocaleWeb(_value);
-      }
-    }
-
-    if (changed) notifyListeners();
-    _loaded = true;
     // Also save chosen locale
     _save();
   }

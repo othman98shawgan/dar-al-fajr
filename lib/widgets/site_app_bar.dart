@@ -4,6 +4,8 @@ import '../content/site_logo.dart';
 import '../theme/brand.dart';
 import '../content/site_content.dart';
 
+enum SiteSectionId { home, about, donate, photos, contact }
+
 class SiteNavKeys {
   final GlobalKey home, about, donate, photos, contact;
   const SiteNavKeys({
@@ -13,23 +15,34 @@ class SiteNavKeys {
     required this.photos,
     required this.contact,
   });
+
+  GlobalKey keyFor(SiteSectionId id) => switch (id) {
+        SiteSectionId.home => home,
+        SiteSectionId.about => about,
+        SiteSectionId.donate => donate,
+        SiteSectionId.photos => photos,
+        SiteSectionId.contact => contact,
+      };
 }
 
 class SiteAppBar extends StatelessWidget implements PreferredSizeWidget {
-  final AppLocale locale; // current locale (e.g., 'en' | 'ar' | 'he')
+  final AppLocale locale;
   final SiteNavKeys keys;
+  final SiteSectionId activeSection;
   final void Function(GlobalKey key) onNavigate;
   final void Function(AppLocale locale) onLocaleChanged;
+
   const SiteAppBar({
     super.key,
     required this.locale,
     required this.keys,
+    this.activeSection = SiteSectionId.home,
     required this.onNavigate,
     required this.onLocaleChanged,
   });
 
   @override
-  Size get preferredSize => const Size.fromHeight(72);
+  Size get preferredSize => const Size.fromHeight(76);
 
   @override
   Widget build(BuildContext context) {
@@ -38,14 +51,15 @@ class SiteAppBar extends StatelessWidget implements PreferredSizeWidget {
 
     final tt = Theme.of(context).textTheme;
 
-    // Use theme-based styles so they carry the locale's font family.
-    final brandTitleStyle =
-        (isMobile ? tt.titleLarge : tt.headlineSmall)?.copyWith(fontWeight: FontWeight.w700, color: Brand.green);
+    final brandTitleStyle = (isMobile ? tt.titleLarge : tt.headlineSmall)?.copyWith(
+      fontWeight: FontWeight.w800,
+      color: Brand.green,
+    );
 
-    final navLinkStyle = (tt.labelLarge ?? tt.titleSmall ?? const TextStyle()).copyWith(color: Brand.green);
-
-    final donateTextStyle = (tt.labelLarge ?? tt.titleSmall ?? const TextStyle())
-        .copyWith(fontWeight: FontWeight.w700); // color comes from FilledButton
+    final donateTextStyle = (tt.labelLarge ?? tt.titleSmall ?? const TextStyle()).copyWith(
+      fontWeight: FontWeight.w800,
+      color: Brand.green,
+    );
 
     final home = t(NavContent.home, locale);
     final about = t(NavContent.about, locale);
@@ -55,76 +69,122 @@ class SiteAppBar extends StatelessWidget implements PreferredSizeWidget {
 
     return AppBar(
       elevation: 0,
-      toolbarHeight: isMobile ? 64 : 72,
-      backgroundColor: Theme.of(context).appBarTheme.backgroundColor ?? Brand.nav,
+      toolbarHeight: isMobile ? 64 : 76,
+      backgroundColor: Brand.nav,
       surfaceTintColor: Colors.transparent,
-      titleSpacing: 12,
-      title: Row(children: [
-        SiteLogo(size: isMobile ? 36 : 48),
-        const SizedBox(width: 10),
-        if (w >= 380)
-          Text(
-            ContentConfig.brandNameLocalized[locale] ?? ContentConfig.brandName,
-            style: brandTitleStyle, // <-- theme-based (no flash)
+      titleSpacing: isMobile ? 12 : 24,
+      title: InkWell(
+        borderRadius: BorderRadius.circular(10),
+        onTap: () => onNavigate(keys.home),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 4),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              SiteLogo(size: isMobile ? 36 : 44),
+              if (!isMobile) ...[
+                const SizedBox(width: 10),
+                Text(
+                  ContentConfig.brandNameLocalized[locale] ?? ContentConfig.brandName,
+                  style: brandTitleStyle,
+                ),
+              ],
+            ],
           ),
-      ]),
+        ),
+      ),
       actions: isMobile
           ? [
-              // Locale picker (mobile: popup)
               _LocaleButton(
                 current: locale,
                 onChanged: onLocaleChanged,
                 isMobile: true,
               ),
-              // Donate always visible
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 6.0),
-                child: FilledButton(
+                child: FilledButton.icon(
                   onPressed: () => onNavigate(keys.donate),
-                  child: Text(donate, style: donateTextStyle), // <-- theme-based
+                  icon: const Icon(Icons.volunteer_activism, size: 16, color: Brand.green),
+                  label: Text(donate, style: donateTextStyle),
                 ),
               ),
               IconButton(
                 tooltip: 'Menu',
                 icon: const Icon(Icons.menu, color: Brand.green),
                 onPressed: () => _openMenu(context, [
-                  _NavItem(icon: Icons.home_outlined, label: home, key: keys.home),
-                  _NavItem(icon: Icons.info_outline, label: about, key: keys.about),
-                  _NavItem(icon: Icons.photo_library, label: photos, key: keys.photos),
-                  _NavItem(icon: Icons.contact_mail, label: contact, key: keys.contact),
+                  _NavItem(
+                    id: SiteSectionId.home,
+                    icon: Icons.home_outlined,
+                    label: home,
+                    key: keys.home,
+                  ),
+                  _NavItem(
+                    id: SiteSectionId.about,
+                    icon: Icons.info_outline,
+                    label: about,
+                    key: keys.about,
+                  ),
+                  _NavItem(
+                    id: SiteSectionId.donate,
+                    icon: Icons.volunteer_activism_outlined,
+                    label: donate,
+                    key: keys.donate,
+                  ),
+                  _NavItem(
+                    id: SiteSectionId.photos,
+                    icon: Icons.photo_library_outlined,
+                    label: photos,
+                    key: keys.photos,
+                  ),
+                  _NavItem(
+                    id: SiteSectionId.contact,
+                    icon: Icons.contact_mail_outlined,
+                    label: contact,
+                    key: keys.contact,
+                  ),
                 ]),
               ),
+              const SizedBox(width: 4),
             ]
           : [
-              TextButton(
-                onPressed: () => onNavigate(keys.home),
-                child: Text(home, style: navLinkStyle), // <-- theme-based
+              _DesktopNavLink(
+                label: home,
+                isActive: activeSection == SiteSectionId.home,
+                onTap: () => onNavigate(keys.home),
               ),
-              TextButton(
-                onPressed: () => onNavigate(keys.about),
-                child: Text(about, style: navLinkStyle), // <-- theme-based
+              _DesktopNavLink(
+                label: about,
+                isActive: activeSection == SiteSectionId.about,
+                onTap: () => onNavigate(keys.about),
               ),
-              TextButton(
-                onPressed: () => onNavigate(keys.photos),
-                child: Text(photos, style: navLinkStyle), // <-- theme-based
+              _DesktopNavLink(
+                label: donate,
+                isActive: activeSection == SiteSectionId.donate,
+                onTap: () => onNavigate(keys.donate),
               ),
-              TextButton(
-                onPressed: () => onNavigate(keys.contact),
-                child: Text(contact, style: navLinkStyle), // <-- theme-based
+              _DesktopNavLink(
+                label: photos,
+                isActive: activeSection == SiteSectionId.photos,
+                onTap: () => onNavigate(keys.photos),
               ),
-              const SizedBox(width: 8),
-              FilledButton(
+              _DesktopNavLink(
+                label: contact,
+                isActive: activeSection == SiteSectionId.contact,
+                onTap: () => onNavigate(keys.contact),
+              ),
+              const SizedBox(width: 12),
+              FilledButton.icon(
                 onPressed: () => onNavigate(keys.donate),
-                child: Text(donate, style: donateTextStyle), // <-- theme-based
+                icon: const Icon(Icons.favorite_rounded, size: 18, color: Brand.green),
+                label: Text(donate, style: donateTextStyle),
               ),
               const SizedBox(width: 8),
-              // Locale picker (desktop: compact popup)
               _LocaleButton(
                 current: locale,
                 onChanged: onLocaleChanged,
                 isMobile: false,
               ),
-              const SizedBox(width: 12),
+              const SizedBox(width: 20),
             ],
     );
   }
@@ -134,20 +194,40 @@ class SiteAppBar extends StatelessWidget implements PreferredSizeWidget {
       context: context,
       useSafeArea: true,
       showDragHandle: true,
+      backgroundColor: Brand.card,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       builder: (ctx) {
         return ListView.separated(
           shrinkWrap: true,
-          padding: const EdgeInsets.symmetric(vertical: 8),
+          padding: const EdgeInsets.fromLTRB(12, 4, 12, 16),
           separatorBuilder: (_, __) => const Divider(height: 1),
           itemCount: items.length,
           itemBuilder: (_, i) {
             final it = items[i];
+            final isActive = it.id == activeSection;
             return ListTile(
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              tileColor: isActive ? Brand.altBg : null,
               leading: Icon(it.icon, color: Brand.green),
-              title: Text(it.label),
+              title: Text(
+                it.label,
+                style: TextStyle(
+                  color: Brand.green,
+                  fontWeight: isActive ? FontWeight.w800 : FontWeight.w600,
+                ),
+              ),
+              trailing: isActive
+                  ? Container(
+                      width: 8,
+                      height: 8,
+                      decoration: const BoxDecoration(
+                        color: Brand.yellow,
+                        shape: BoxShape.circle,
+                      ),
+                    )
+                  : null,
               onTap: () {
                 Navigator.pop(ctx);
                 onNavigate(it.key);
@@ -160,11 +240,67 @@ class SiteAppBar extends StatelessWidget implements PreferredSizeWidget {
   }
 }
 
+class _DesktopNavLink extends StatelessWidget {
+  final String label;
+  final bool isActive;
+  final VoidCallback onTap;
+
+  const _DesktopNavLink({
+    required this.label,
+    required this.isActive,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final tt = Theme.of(context).textTheme;
+    final style = (tt.labelLarge ?? tt.titleSmall ?? const TextStyle()).copyWith(
+      color: Brand.green,
+      fontWeight: isActive ? FontWeight.w800 : FontWeight.w600,
+    );
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 4.0),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(10),
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(label, style: style),
+              const SizedBox(height: 4),
+              AnimatedContainer(
+                duration: const Duration(milliseconds: 220),
+                curve: Curves.easeOutCubic,
+                width: isActive ? 24 : 0,
+                height: 3,
+                decoration: BoxDecoration(
+                  color: isActive ? Brand.yellow : Colors.transparent,
+                  borderRadius: BorderRadius.circular(999),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 class _NavItem {
+  final SiteSectionId id;
   final IconData icon;
   final String label;
   final GlobalKey key;
-  _NavItem({required this.icon, required this.label, required this.key});
+  _NavItem({
+    required this.id,
+    required this.icon,
+    required this.label,
+    required this.key,
+  });
 }
 
 // === Locale picker button ===
@@ -172,32 +308,46 @@ class _LocaleButton extends StatelessWidget {
   final AppLocale current;
   final void Function(AppLocale) onChanged;
   final bool isMobile;
-  const _LocaleButton({required this.current, required this.onChanged, required this.isMobile});
+  const _LocaleButton({
+    required this.current,
+    required this.onChanged,
+    required this.isMobile,
+  });
 
   @override
   Widget build(BuildContext context) {
-    // Simple 3-option language menu
     const langs = [
-      ('en', 'EN', 'English'),
-      ('ar', 'AR', 'العربية'),
       ('he', 'HE', 'עברית'),
+      ('ar', 'AR', 'العربية'),
+      ('en', 'EN', 'English'),
     ];
 
     final currentShort = langs.firstWhere((l) => l.$1 == current, orElse: () => langs.first).$2;
 
     return PopupMenuButton<String>(
       tooltip: 'Language',
-      icon: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const Icon(Icons.language, color: Brand.green),
-
-          const SizedBox(width: 6),
-          // Use theme-based style for the short code too
-          Text(currentShort,
-              style: (Theme.of(context).textTheme.labelLarge ?? const TextStyle())
-                  .copyWith(color: Brand.green, fontWeight: FontWeight.w700)),
-        ],
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      icon: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+        decoration: BoxDecoration(
+          color: Brand.altBg,
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(color: Brand.outline),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(Icons.language, color: Brand.green, size: 18),
+            const SizedBox(width: 6),
+            Text(
+              currentShort,
+              style: (Theme.of(context).textTheme.labelLarge ?? const TextStyle()).copyWith(
+                color: Brand.green,
+                fontWeight: FontWeight.w800,
+              ),
+            ),
+          ],
+        ),
       ),
       onSelected: (code) => onChanged(code),
       itemBuilder: (ctx) => [
@@ -206,9 +356,18 @@ class _LocaleButton extends StatelessWidget {
             value: l.$1,
             child: Row(
               children: [
-                if (l.$1 == current) const Icon(Icons.check, size: 18),
-                if (l.$1 == current) const SizedBox(width: 6),
-                Text(l.$3),
+                if (l.$1 == current)
+                  const Icon(Icons.check_rounded, size: 18, color: Brand.green)
+                else
+                  const SizedBox(width: 18),
+                const SizedBox(width: 8),
+                Text(
+                  l.$3,
+                  style: TextStyle(
+                    fontWeight: l.$1 == current ? FontWeight.w700 : FontWeight.w500,
+                    color: l.$1 == current ? Brand.green : Brand.text,
+                  ),
+                ),
               ],
             ),
           ),

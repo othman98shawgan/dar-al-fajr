@@ -17,76 +17,99 @@ class AboutSection extends StatelessWidget {
     final title = t(AboutContent.title, locale);
     final body = t(AboutContent.description, locale);
     final pillars = AboutContent.pillars(locale);
+    final pillarDescs = AboutContent.pillarDescriptions(locale);
     const imagePath = 'assets/images/image-00.jpg';
 
     final photoThumb = ClipRRect(
-      borderRadius: BorderRadius.circular(12),
+      borderRadius: BorderRadius.circular(16),
       child: Image.asset(
         imagePath,
         fit: BoxFit.cover,
         filterQuality: FilterQuality.high,
-        semanticLabel: 'Dar al-Fajr photo',
+        semanticLabel: 'Dar al-Fajr campus photo',
       ),
     );
 
-// Use ZoomableTap with a single image provider
     final photoZoomable = ZoomableTap(
-      heroTagBase: 'about-photo', // optional hero
+      heroTagBase: 'about-photo',
       initialIndex: 0,
-      providers: [AssetImage(imagePath)],
+      providers: const [AssetImage(imagePath)],
       child: photoThumb,
     );
 
-    // Desktop/tablet: add a soft shadow; Mobile: keep it flat (faster, lighter)
-    final photo = AspectRatio(
-      aspectRatio: 16 / 9,
-      child: isMobile
-          ? photoZoomable
-          : DecoratedBox(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(12),
-                boxShadow: const [
-                  BoxShadow(
-                    color: Color(0x22000000),
-                    blurRadius: 18,
-                    spreadRadius: 2,
-                    offset: Offset(0, 10),
-                  ),
-                ],
-              ),
-              child: photoZoomable,
-            ),
+    final photoCard = Container(
+      decoration: BoxDecoration(
+        color: Brand.card,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: Brand.outline, width: 4),
+        boxShadow: const [
+          BoxShadow(
+            color: Color(0x141D6363),
+            blurRadius: 24,
+            offset: Offset(0, 10),
+          ),
+        ],
+      ),
+      child: AspectRatio(
+        aspectRatio: 16 / 10,
+        child: photoZoomable,
+      ),
     );
+
     final textBlock = _AboutTextBlock(
       title: title,
       body: body,
-      chips: [
-        _Pill(icon: Icons.menu_book, text: pillars[0]), // Education
-        _Pill(icon: Icons.groups, text: pillars[1]), // Community
-        _Pill(icon: Icons.volunteer_activism, text: pillars[2]) // Service
-      ],
+      locale: locale,
     );
 
-    // Mobile: photo first (visual hook), then text
-    if (isMobile) {
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          photo,
-          const SizedBox(height: 24),
-          textBlock,
-        ],
-      );
-    }
+    final pillarCardsData = [
+      (Icons.menu_book_rounded, pillars[0], pillarDescs[0]),
+      (Icons.groups_rounded, pillars[1], pillarDescs[1]),
+      (Icons.volunteer_activism_rounded, pillars[2], pillarDescs[2]),
+    ];
 
-    // Desktop: text left, photo right — force LTR so RTL locales don’t flip order
-    return Row(
-      textDirection: TextDirection.ltr,
-      crossAxisAlignment: CrossAxisAlignment.start,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Expanded(child: textBlock),
-        const SizedBox(width: 24),
-        Expanded(child: photo),
+        // RTL-aware split layout:
+        // No forced TextDirection.ltr — Row naturally places text on the right in RTL (Hebrew/Arabic)
+        // and on the left in LTR (English).
+        if (isMobile) ...[
+          textBlock,
+          const SizedBox(height: 24),
+          photoCard,
+        ] else
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Expanded(flex: 6, child: textBlock),
+              const SizedBox(width: 36),
+              Expanded(flex: 5, child: photoCard),
+            ],
+          ),
+
+        if (!isMobile) ...[
+          const SizedBox(height: 48),
+
+          // 3 Value Pillar Cards (Education, Community, Service)
+          IntrinsicHeight(
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                for (int i = 0; i < pillarCardsData.length; i++) ...[
+                  Expanded(
+                    child: _PillarCard(
+                      icon: pillarCardsData[i].$1,
+                      title: pillarCardsData[i].$2,
+                      description: pillarCardsData[i].$3,
+                    ),
+                  ),
+                  if (i < pillarCardsData.length - 1) const SizedBox(width: 20),
+                ],
+              ],
+            ),
+          ),
+        ],
       ],
     );
   }
@@ -95,57 +118,138 @@ class AboutSection extends StatelessWidget {
 class _AboutTextBlock extends StatelessWidget {
   final String title;
   final String body;
-  final List<Widget> chips;
-  const _AboutTextBlock({required this.title, required this.body, required this.chips});
+  final AppLocale locale;
+
+  const _AboutTextBlock({
+    required this.title,
+    required this.body,
+    required this.locale,
+  });
 
   @override
   Widget build(BuildContext context) {
-    final l = LocaleScope.of(context).value; // 'en' | 'ar' | 'he'
-    final isArabic = l == 'ar';
-
+    final isArabic = locale == 'ar';
     final tt = Theme.of(context).textTheme;
 
-// sensible fallbacks if any is null
     final titleBase = tt.headlineMedium ?? tt.titleLarge ?? const TextStyle();
     final bodyBase = tt.bodyLarge ?? tt.bodyMedium ?? const TextStyle();
 
-// For Arabic we usually avoid extra letterSpacing and use a bit more line-height
-    final titleStyle = isArabic
-        ? titleBase.copyWith(letterSpacing: 0) // family already = Cairo via Theme
-        : titleBase;
+    final titleStyle = titleBase.copyWith(
+      color: Brand.green,
+      fontWeight: FontWeight.w800,
+      letterSpacing: isArabic ? 0 : null,
+    );
 
-    final bodyStyle = isArabic ? bodyBase.copyWith(letterSpacing: 0, height: 1.6) : bodyBase;
+    final bodyStyle = bodyBase.copyWith(
+      color: Brand.text,
+      letterSpacing: isArabic ? 0 : null,
+      height: isArabic ? 1.7 : 1.65,
+      fontSize: 16.5,
+    );
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(title, style: titleStyle),
-        const SizedBox(height: 12),
-        ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 640),
-          child: SelectableText(body, style: bodyStyle),
+        // Subtle accent bar + section title
+        Container(
+          width: 44,
+          height: 4,
+          decoration: BoxDecoration(
+            color: Brand.yellow,
+            borderRadius: BorderRadius.circular(999),
+          ),
         ),
-        // const SizedBox(height: 16),
-        // Wrap(spacing: 12, runSpacing: 12, children: chips),
+        const SizedBox(height: 12),
+        Text(title, style: titleStyle),
+        const SizedBox(height: 16),
+        SelectableText(body, style: bodyStyle),
       ],
     );
   }
 }
 
-class _Pill extends StatelessWidget {
+class _PillarCard extends StatefulWidget {
   final IconData icon;
-  final String text;
-  const _Pill({required this.icon, required this.text});
+  final String title;
+  final String description;
+
+  const _PillarCard({
+    required this.icon,
+    required this.title,
+    required this.description,
+  });
+
+  @override
+  State<_PillarCard> createState() => _PillarCardState();
+}
+
+class _PillarCardState extends State<_PillarCard> {
+  bool _hovered = false;
 
   @override
   Widget build(BuildContext context) {
-    return Chip(
-      avatar: Icon(icon, color: Brand.green, size: 18),
-      label: Text(text),
-      side: const BorderSide(color: Brand.green),
-      backgroundColor: Brand.bg,
-      labelStyle: const TextStyle(color: Brand.green),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+    final tt = Theme.of(context).textTheme;
+
+    return MouseRegion(
+      onEnter: (_) => setState(() => _hovered = true),
+      onExit: (_) => setState(() => _hovered = false),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        curve: Curves.easeOut,
+        padding: const EdgeInsets.all(24),
+        decoration: BoxDecoration(
+          color: Brand.card,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: _hovered ? Brand.green.withValues(alpha: 0.45) : Brand.outline,
+            width: 1.5,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: _hovered ? const Color(0x161D6363) : const Color(0x081D6363),
+              blurRadius: _hovered ? 20 : 10,
+              offset: Offset(0, _hovered ? 8 : 4),
+            ),
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              width: 52,
+              height: 52,
+              decoration: BoxDecoration(
+                color: _hovered ? Brand.green : Brand.altBg,
+                borderRadius: BorderRadius.circular(14),
+                border: Border.all(
+                  color: _hovered ? Brand.green : Brand.outline,
+                ),
+              ),
+              child: Icon(
+                widget.icon,
+                color: _hovered ? Colors.white : Brand.green,
+                size: 26,
+              ),
+            ),
+            const SizedBox(height: 18),
+            Text(
+              widget.title,
+              style: tt.titleLarge?.copyWith(
+                color: Brand.green,
+                fontWeight: FontWeight.w800,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              widget.description,
+              style: tt.bodyMedium?.copyWith(
+                color: Brand.text,
+                height: 1.55,
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
