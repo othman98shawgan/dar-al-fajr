@@ -39,7 +39,7 @@ class _LandingPageState extends State<LandingPage> {
     super.initState();
     scrollCtrl.addListener(_onScroll);
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      precacheImage(const AssetImage('assets/images/logo.png'), context);
+      precacheImage(const AssetImage('assets/images/logo-tr.png'), context);
       precacheImage(const AssetImage('assets/images/image-00.jpg'), context);
     });
   }
