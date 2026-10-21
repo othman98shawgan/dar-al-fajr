@@ -14,7 +14,8 @@ class ContactSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final w = MediaQuery.sizeOf(context).width;
-    final members = ContactContent.boardMembers;
+    final boardMembers = ContactContent.boardMembers;
+    final keyPeople = ContactContent.keyPeople;
     final isMobile = w < 700;
     final tt = Theme.of(context).textTheme;
 
@@ -29,7 +30,7 @@ class ContactSection extends StatelessWidget {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // Section Header in Deep Teal (#1D6363)
+            // Main Section Header in Deep Teal (#1D6363)
             Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
@@ -64,17 +65,42 @@ class ContactSection extends StatelessWidget {
 
             SizedBox(height: isMobile ? 24 : 32),
 
-            // Prominent Secretariat Hours & Direct Contact Banner
+            // Card 1: Secretariat Hours & Direct Contact Banner
             _SecretariatBanner(locale: locale, isMobile: isMobile),
 
-            SizedBox(height: isMobile ? 24 : 32),
+            SizedBox(height: isMobile ? 32 : 44),
 
-            // Responsive Wrap layout for Team/Member Cards (sizes naturally to content — no fixed aspect ratio GridView)
+            // Card / Sub-Section 2: Amuta Board Members
+            _SubSectionHeader(
+              title: t(ContactContent.boardSectionTitle, locale),
+              icon: Icons.groups_rounded,
+            ),
+            const SizedBox(height: 16),
             Wrap(
               spacing: spacing,
               runSpacing: spacing,
               children: [
-                for (final member in members)
+                for (final member in boardMembers)
+                  SizedBox(
+                    width: cardWidth,
+                    child: _MemberCard(member: member, locale: locale),
+                  ),
+              ],
+            ),
+
+            SizedBox(height: isMobile ? 32 : 44),
+
+            // Card / Sub-Section 3: Key People in the Center
+            _SubSectionHeader(
+              title: t(ContactContent.keyPeopleSectionTitle, locale),
+              icon: Icons.badge_outlined,
+            ),
+            const SizedBox(height: 16),
+            Wrap(
+              spacing: spacing,
+              runSpacing: spacing,
+              children: [
+                for (final member in keyPeople)
                   SizedBox(
                     width: cardWidth,
                     child: _MemberCard(member: member, locale: locale),
@@ -84,6 +110,43 @@ class ContactSection extends StatelessWidget {
           ],
         );
       },
+    );
+  }
+}
+
+class _SubSectionHeader extends StatelessWidget {
+  final String title;
+  final IconData icon;
+
+  const _SubSectionHeader({
+    required this.title,
+    required this.icon,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final tt = Theme.of(context).textTheme;
+
+    return Row(
+      children: [
+        Container(
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: Brand.altBg,
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(color: Brand.outline),
+          ),
+          child: Icon(icon, color: Brand.green, size: 20),
+        ),
+        const SizedBox(width: 12),
+        Text(
+          title,
+          style: tt.titleLarge?.copyWith(
+            fontWeight: FontWeight.w800,
+            color: Brand.green,
+          ),
+        ),
+      ],
     );
   }
 }

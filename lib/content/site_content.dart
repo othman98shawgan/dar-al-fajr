@@ -19,12 +19,12 @@ class ContentConfig {
     'he': 'דאר אל-פג׳ר',
   };
 
-  static const amutaNumber = '580778629';
+  static const amutaNumber = '580814747';
 
   static const amutaBadge = {
-    'en': 'Registered Non-Profit #580778629 • Kfar Kama',
-    'ar': 'جمعية مسجلة #580778629 • كفر كما',
-    'he': 'עמותה רשומה (ע"ר) #580778629 • כפר כמא',
+    'en': 'Registered Non-Profit #580814747 • Kfar Kama',
+    'ar': 'جمعية مسجلة #580814747 • كفر كما',
+    'he': 'עמותה רשומה (ע"ר) #580814747 • כפר כמא',
   };
 
   static const brandLogo = 'assets/images/logo.png';
@@ -67,9 +67,9 @@ class HomeContent {
       };
 
   static const statsValues = {
-    'students': '183',
-    'weeklyClasses': '105',
-    'volunteers': '45',
+    'students': '180',
+    'weeklyClasses': '100',
+    'volunteers': '50',
     'years': '3',
   };
 
@@ -89,11 +89,11 @@ class AboutContent {
 
   static const description = {
     'en':
-        'Dar al-Fajr is an Islamic education center in Kfar Kama, dedicated to teaching children and youth the reading, memorization, and proper recitation of the Qur’an. In addition to Qur’an studies, we hold weekly lessons that focus on Islamic values, faith, and character - covering topics such as fiqh, ʿaqīdah, and sīrah. Today, Dar al-Fajr serves over 183 students (boys and girls) across multiple levels, from beginners to advanced. Our mission is clear: to nurture a generation that loves the Qur’an, understands its message, and lives by its guidance.',
+        'Dar al-Fajr is an Islamic education center in Kfar Kama, dedicated to teaching children and youth the reading, memorization, and proper recitation of the Qur’an. In addition to Qur’an studies, we hold weekly lessons that focus on Islamic values, faith, and character - covering topics such as fiqh, ʿaqīdah, and sīrah. Today, Dar al-Fajr serves over 180 students (boys and girls) across multiple levels, from beginners to advanced. Our mission is clear: to nurture a generation that loves the Qur’an, understands its message, and lives by its guidance.',
     'ar':
-        'دار الفجر هو مركز تعليمي إسلامي في كفر كما، يُعنى بتعليم الأطفال والناشئة قراءة القرآن الكريم وتجويده وحفظه. إلى جانب دروس القرآن، نقيم دروسًا أسبوعية تُعنى بالقيم الإسلامية والإيمان والأخلاق، وتشمل موضوعات في الفقه والعقيدة والسيرة النبوية. يضم المركز اليوم أكثر من 183 طالبًا وطالبة في مستويات مختلفة، من المبتدئين إلى المتقدمين. ورسالتنا واضحة: تربية جيلٍ يحبّ القرآن، يفهم معانيه ويعيش بهديه.',
+        'دار الفجر هو مركز تعليمي إسلامي في كفر كما، يُعنى بتعليم الأطفال والناشئة قراءة القرآن الكريم وتجويده وحفظه. إلى جانب دروس القرآن، نقيم دروسًا أسبوعية تُعنى بالقيم الإسلامية والإيمان والأخلاق، وتشمل موضوعات في الفقه والعقيدة والسيرة النبوية. يضم المركز اليوم أكثر من 180 طالبًا وطالبة في مستويات مختلفة، من المبتدئين إلى المتقدمين. ورسالتنا واضحة: تربية جيلٍ يحبّ القرآن، يفهم معانيه ويعيش بهديه.',
     'he':
-        'דאר אל־פג׳ר הוא מרכז חינוך אסלאמי בכפר כמא, שמוקדש ללימוד קריאה, שינון ותגויד של הקוראן לילדים ולנוער. בנוסף ללימודי הקוראן, אנו מקיימים שיעורים שבועיים בנושאים של ערכים אסלאמיים, אמונה ומידות טובות - כגון פִקְה, עַקִידָה וסִירַה. כיום לומדים במרכז למעלה מ־183 תלמידים ותלמידות ברמות שונות - מהמתחילים ועד המתקדמים. החזון שלנו ברור: לטפח דור שאוהב את הקוראן, מבין את משמעותו וחי לאורו.',
+        'דאר אל־פג׳ר הוא מרכז חינוך אסלאמי בכפר כמא, שמוקדש ללימוד קריאה, שינון ותגויד של הקוראן לילדים ולנוער. בנוסף ללימודי הקוראן, אנו מקיימים שיעורים שבועיים בנושאים של ערכים אסלאמיים, אמונה ומידות טובות - כגון פִקְה, עַקִידָה וסִירַה. כיום לומדים במרכז למעלה מ־180 תלמידים ותלמידות ברמות שונות - מהמתחילים ועד המתקדמים. החזון שלנו ברור: לטפח דור שאוהב את הקוראן, מבין את משמעותו וחי לאורו.',
   };
 
   static List<String> pillars(AppLocale l) => [
@@ -113,17 +113,18 @@ class AboutContent {
         ),
         t(
           {
-            'en': 'Strengthening identity, brotherhood, and shared values for over 183 boys and girls in Kfar Kama.',
-            'ar': 'تعزيز الهوية والأخوة والقيم المشتركة لأكثر من 183 طالباً وطالبة في كفر كما.',
-            'he': 'חיזוק הזהות, האחווה והערכים המשותפים עבור למעלה מ־183 תלמידים ותלמידות בכפר כמא.',
+            'en': 'Strengthening identity, brotherhood, and shared values for over 180 boys and girls in Kfar Kama.',
+            'ar': 'تعزيز الهوية والأخوة والقيم المشتركة لأكثر من 180 طالباً وطالبة في كفر كما.',
+            'he': 'חיזוק הזהות, האחווה והערכים המשותפים עבור למעלה מ־180 תלמידים ותלמידות בכפר כמא.',
           },
           l,
         ),
         t(
           {
-            'en': 'Powered by 45+ dedicated volunteers nurturing a generation that lives by the guidance of the Qur’an.',
-            'ar': 'بجهود أكثر من 45 متطوعاً مخلصاً في تربية جيل يعيش بهدي القرآن الكريم ويخدم مجتمعه.',
-            'he': 'מופעל על ידי למעלה מ־45 מתנדבים מסורים המטפחים דור שחי לאורו של הקוראן ותורם לקהילה.',
+            'en':
+                'Powered by 50+ dedicated volunteers nurturing a generation that lives by the guidance of the Qur’an.',
+            'ar': 'بجهود أكثر من 50 متطوعاً مخلصاً في تربية جيل يعيش بهدي القرآن الكريم ويخدم مجتمعه.',
+            'he': 'מופעל על ידי למעלה מ־50 מתנדבים מסורים המטפחים דור שחי לאורו של הקוראן ותורם לקהילה.',
           },
           l,
         ),
@@ -242,9 +243,9 @@ class ContactContent {
   };
 
   static const subtitle = {
-    'en': 'Reach out to our board members or contact the secretariat directly during office hours.',
-    'ar': 'تواصلوا مع أعضاء الإدارة أو مع سكرتارية المركز مباشرة خلال ساعات الدوام.',
-    'he': 'מוזמנים לפנות לחברי ההנהלה או ליצור קשר ישיר עם מזכירות המרכז בשעות הפעילות.',
+    'en': 'Contact the secretariat directly during office hours.',
+    'ar': 'يمكنكم التواصل مع سكرتارية المركز مباشرة خلال ساعات الدوام.',
+    'he': 'ניתן לפנות ישירות למזכירות המרכז בשעות הפעילות.',
   };
 
   static const officeHoursTitle = {
@@ -265,6 +266,18 @@ class ContactContent {
   static const instagram = {'en': 'Instagram', 'ar': 'انستاجرام', 'he': 'אינסטגרם'};
   static const phone = {'en': 'Phone', 'ar': 'هاتف', 'he': 'טלפון'};
   static const email = {'en': 'Email', 'ar': 'بريد إلكتروني', 'he': 'אימייל'};
+
+  static const boardSectionTitle = {
+    'en': 'Board Members',
+    'ar': 'أعضاء إدارة الجمعية',
+    'he': 'חברי העמותה',
+  };
+
+  static const keyPeopleSectionTitle = {
+    'en': 'Key People',
+    'ar': 'إدارة المركز',
+    'he': 'הנהלת המרכז',
+  };
 
   static List<Member> boardMembers = const [
     Member(
@@ -297,9 +310,18 @@ class ContactContent {
       phone: 'tel:+972526034686',
       whatsapp: 'https://wa.me/972526034686',
     ),
+  ];
+
+  static List<Member> keyPeople = const [
     Member(
       name: {'en': 'Othman Shawgan', 'ar': 'عثمان شوجن', 'he': "עות'מאן שוגן"},
       role: {'en': 'Director of Education', 'ar': 'المدير التعليمي', 'he': 'מנהל הלימודים'},
+      phone: '',
+      whatsapp: '',
+    ),
+    Member(
+      name: {'en': 'Sana Patuash', 'ar': 'سناء بطواش', 'he': 'סנא פטואש'},
+      role: {'en': "Girls' Center Director", 'ar': 'مديرة مركز الفتيات', 'he': 'מנהלת מרכז הבנות'},
       phone: '',
       whatsapp: '',
     ),
@@ -340,9 +362,9 @@ class FooterContent {
   };
 
   static const registration = {
-    'en': 'Registered Non-Profit Association (Amuta) #580778629',
-    'ar': 'جمعية غير ربحية مسجلة رقم 580778629',
-    'he': 'עמותה רשומה (ע"ר) מס׳ 580778629',
+    'en': 'Registered Non-Profit Association (Amuta) #580814747',
+    'ar': 'جمعية غير ربحية مسجلة رقم 580814747',
+    'he': 'עמותה רשומה (ע"ר) מס׳ 580814747',
   };
 
   static const rights = {
