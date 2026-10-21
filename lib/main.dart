@@ -9,7 +9,7 @@ import 'utils/prefetch.dart';
 
 Future<void> _prewarmCriticalImages() async {
   // Use your real asset paths
-  const logo = AssetImage('assets/images/logo.png');
+  const logo = AssetImage('assets/images/logo-tr.png');
   const about = AssetImage('assets/images/image-00.jpg');
   await Future.wait([
     prefetchImageNoContext(logo),

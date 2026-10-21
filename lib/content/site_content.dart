@@ -27,7 +27,7 @@ class ContentConfig {
     'he': 'עמותה רשומה (ע"ר) #580814747 • כפר כמא',
   };
 
-  static const brandLogo = 'assets/images/logo.png';
+  static const brandLogo = 'assets/images/logo-tr.png';
   static const donateUrl = 'https://pay.sumit.co.il/frrouf/i66g0c/c/payment/';
   static const studentPayUrl = 'https://pay.sumit.co.il/frrouf/i66g6b/c/payment/';
 
@@ -50,7 +50,7 @@ class HomeContent {
   static const subtitle = {
     'en': 'Join us in our mission to spread knowledge and understanding of the Qur\'an.',
     'ar': 'انضمّ إلينا في رسالتنا نحو جيل قرآني.',
-    'he': 'בואו להיות חלק מהמאמץ להפיץ את הידע וההבנה של הקוראן.',
+    'he': 'הצטרפו ליוזמה להפיץ את הידע וההבנה של הקוראן.',
   };
 
   static const secondaryCta = {
@@ -237,19 +237,19 @@ class PhotosContent {
 /// ===== Contact section =====
 class ContactContent {
   static const title = {
-    'en': 'Contact & Secretariat',
-    'ar': 'تواصل معنا والسكرتارية',
-    'he': 'צרו קשר ומזכירות',
+    'en': 'Contact us',
+    'ar': 'تواصل معنا',
+    'he': 'יצירת קשר',
   };
 
   static const subtitle = {
-    'en': 'Contact the secretariat directly during office hours.',
-    'ar': 'يمكنكم التواصل مع سكرتارية المركز مباشرة خلال ساعات الدوام.',
-    'he': 'ניתן לפנות ישירות למזכירות המרכז בשעות הפעילות.',
+    'en': 'Contact the center directly during office hours.',
+    'ar': 'يمكنكم التواصل مع المركز مباشرة خلال ساعات الدوام.',
+    'he': 'ניתן לפנות ישירות למרכז בשעות הפעילות.',
   };
 
   static const officeHoursTitle = {
-    'en': 'Secretariat Hours',
+    'en': 'Office Hours',
     'ar': 'ساعات السكرتارية',
     'he': 'שעות מזכירות',
   };

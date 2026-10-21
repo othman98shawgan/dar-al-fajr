@@ -1,11 +1,11 @@
 {
-    "name": "dar_al_fajr",
-    "short_name": "dar_al_fajr",
+    "name": "Dar al-Fajr | דאר אל-פג׳ר | دار الفجر",
+    "short_name": "Dar al-Fajr",
     "start_url": ".",
     "display": "standalone",
-    "background_color": "#0175C2",
-    "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "background_color": "#1D6363",
+    "theme_color": "#1D6363",
+    "description": "Dar al-Fajr is an Islamic education and community center in Kfar Kama dedicated to Qur’an memorization, youth studies, and community enrichment.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [
