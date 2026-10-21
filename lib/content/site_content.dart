@@ -282,7 +282,7 @@ class ContactContent {
   static List<Member> boardMembers = const [
     Member(
       name: {'en': 'Aslan Nash', 'ar': 'اسلان ناش', 'he': 'אסלאן נאש'},
-      role: {'en': 'Board member', 'ar': 'عضو إدارة', 'he': 'חבר הנהלה'},
+      role: {'en': 'Chairman of the Board', 'ar': 'مدير الجمعية', 'he': 'מנהל עמותה'},
       phone: 'tel:+972532737826',
       whatsapp: 'https://wa.me/972532737826',
     ),
@@ -315,13 +315,13 @@ class ContactContent {
   static List<Member> keyPeople = const [
     Member(
       name: {'en': 'Othman Shawgan', 'ar': 'عثمان شوجن', 'he': "עות'מאן שוגן"},
-      role: {'en': 'Director of Education', 'ar': 'المدير التعليمي', 'he': 'מנהל הלימודים'},
+      role: {'en': 'Director of Education', 'ar': 'مدير مركز التعليم', 'he': 'מנהל מרכז לימודים'},
       phone: '',
       whatsapp: '',
     ),
     Member(
       name: {'en': 'Sana Patuash', 'ar': 'سناء بطواش', 'he': 'סנא פטואש'},
-      role: {'en': "Girls' Center Director", 'ar': 'مديرة مركز الفتيات', 'he': 'מנהלת מרכז הבנות'},
+      role: {'en': "Sisters' Center Director", 'ar': 'مديرة مركز الأخوات', 'he': 'מנהלת מרכז נשים/בנות'},
       phone: '',
       whatsapp: '',
     ),
