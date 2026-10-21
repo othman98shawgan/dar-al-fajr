@@ -30,11 +30,8 @@ jobs:
         run: flutter build web --release --base-href=/
 
       - name: Deploy to Cloudflare Pages
-        uses: cloudflare/pages-action@1
+        uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          projectName: dar-al-fajr
-          directory: build/web
-          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
-          branch: ${{ github.ref_name }}
+          command: pages deploy build/web --project-name=dar-al-fajr --branch=${{ github.ref_name }}
