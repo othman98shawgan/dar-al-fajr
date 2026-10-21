@@ -19,6 +19,14 @@ class ContentConfig {
     'he': 'דאר אל-פג׳ר',
   };
 
+  static const amutaNumber = '580814747';
+
+  static const amutaBadge = {
+    'en': 'Registered Non-Profit #580814747 • Kfar Kama',
+    'ar': 'جمعية مسجلة #580814747 • كفر كما',
+    'he': 'עמותה רשומה (ע"ר) #580814747 • כפר כמא',
+  };
+
   static const brandLogo = 'assets/images/logo.png';
   static const donateUrl = 'https://pay.sumit.co.il/frrouf/i66g0c/c/payment/';
   static const studentPayUrl = 'https://pay.sumit.co.il/frrouf/i66g6b/c/payment/';
@@ -45,6 +53,12 @@ class HomeContent {
     'he': 'בואו להיות חלק מהמאמץ להפיץ את הידע וההבנה של הקוראן.',
   };
 
+  static const secondaryCta = {
+    'en': 'Our Mission',
+    'ar': 'رسالتنا',
+    'he': 'החזון שלנו',
+  };
+
   static Map<String, String> statsLabels(AppLocale l) => {
         'students': t({'en': 'Students', 'ar': 'طالب وطالبة', 'he': 'תלמידים ותלמידות'}, l),
         'weeklyClasses': t({'en': 'Weekly Classes', 'ar': 'درس أسبوعي', 'he': 'שיעורים שבועיים'}, l),
@@ -53,9 +67,9 @@ class HomeContent {
       };
 
   static const statsValues = {
-    'students': '183',
-    'weeklyClasses': '105',
-    'volunteers': '45',
+    'students': '180',
+    'weeklyClasses': '100',
+    'volunteers': '50',
     'years': '3',
   };
 
@@ -75,17 +89,45 @@ class AboutContent {
 
   static const description = {
     'en':
-        'Dar al-Fajr is an Islamic education center in Kfar Kama, dedicated to teaching children and youth the reading, memorization, and proper recitation of the Qur’an. In addition to Qur’an studies, we hold weekly lessons that focus on Islamic values, faith, and character - covering topics such as fiqh, ʿaqīdah, and sīrah. Today, Dar al-Fajr serves over 183 students (boys and girls) across multiple levels, from beginners to advanced. Our mission is clear: to nurture a generation that loves the Qur’an, understands its message, and lives by its guidance.',
+        'Dar al-Fajr is an Islamic education center in Kfar Kama, dedicated to teaching children and youth the reading, memorization, and proper recitation of the Qur’an. In addition to Qur’an studies, we hold weekly lessons that focus on Islamic values, faith, and character - covering topics such as fiqh, ʿaqīdah, and sīrah. Today, Dar al-Fajr serves over 180 students (boys and girls) across multiple levels, from beginners to advanced. Our mission is clear: to nurture a generation that loves the Qur’an, understands its message, and lives by its guidance.',
     'ar':
-        'دار الفجر هو مركز تعليمي إسلامي في كفر كما، يُعنى بتعليم الأطفال والناشئة قراءة القرآن الكريم وتجويده وحفظه. إلى جانب دروس القرآن، نقيم دروسًا أسبوعية تُعنى بالقيم الإسلامية والإيمان والأخلاق، وتشمل موضوعات في الفقه والعقيدة والسيرة النبوية. يضم المركز اليوم أكثر من 183 طالبًا وطالبة في مستويات مختلفة، من المبتدئين إلى المتقدمين. ورسالتنا واضحة: تربية جيلٍ يحبّ القرآن، يفهم معانيه ويعيش بهديه.',
+        'دار الفجر هو مركز تعليمي إسلامي في كفر كما، يُعنى بتعليم الأطفال والناشئة قراءة القرآن الكريم وتجويده وحفظه. إلى جانب دروس القرآن، نقيم دروسًا أسبوعية تُعنى بالقيم الإسلامية والإيمان والأخلاق، وتشمل موضوعات في الفقه والعقيدة والسيرة النبوية. يضم المركز اليوم أكثر من 180 طالبًا وطالبة في مستويات مختلفة، من المبتدئين إلى المتقدمين. ورسالتنا واضحة: تربية جيلٍ يحبّ القرآن، يفهم معانيه ويعيش بهديه.',
     'he':
-        'דאר אל־פג׳ר הוא מרכז חינוך אסלאמי בכפר כמא, שמוקדש ללימוד קריאה, שינון ותגויד של הקוראן לילדים ולנוער. בנוסף ללימודי הקוראן, אנו מקיימים שיעורים שבועיים בנושאים של ערכים אסלאמיים, אמונה ומידות טובות - כגון פִקְה, עַקִידָה וסִירַה. כיום לומדים במרכז למעלה מ־183 תלמידים ותלמידות ברמות שונות - מהמתחילים ועד המתקדמים. החזון שלנו ברור: לטפח דור שאוהב את הקוראן, מבין את משמעותו וחי לאורו.',
+        'דאר אל־פג׳ר הוא מרכז חינוך אסלאמי בכפר כמא, שמוקדש ללימוד קריאה, שינון ותגויד של הקוראן לילדים ולנוער. בנוסף ללימודי הקוראן, אנו מקיימים שיעורים שבועיים בנושאים של ערכים אסלאמיים, אמונה ומידות טובות - כגון פִקְה, עַקִידָה וסִירַה. כיום לומדים במרכז למעלה מ־180 תלמידים ותלמידות ברמות שונות - מהמתחילים ועד המתקדמים. החזון שלנו ברור: לטפח דור שאוהב את הקוראן, מבין את משמעותו וחי לאורו.',
   };
 
   static List<String> pillars(AppLocale l) => [
         t({'en': 'Education', 'ar': 'تربية', 'he': 'חינוך'}, l),
         t({'en': 'Community', 'ar': 'المجتمع', 'he': 'קהילה'}, l),
         t({'en': 'Service', 'ar': 'الخدمة', 'he': 'שירות'}, l),
+      ];
+
+  static List<String> pillarDescriptions(AppLocale l) => [
+        t(
+          {
+            'en': 'Structured Qur’an recitation, memorization, and weekly lessons in Islamic values, fiqh, and sīrah.',
+            'ar': 'حلقات منهجية لتلاوة القرآن الكريم وحفظه، ودروس أسبوعية في العقيدة والفقه والسيرة النبوية.',
+            'he': 'לימוד מובנה של קריאה ושינון הקוראן, לצד שיעורים שבועיים בערכים, אמונה ומידות טובות.',
+          },
+          l,
+        ),
+        t(
+          {
+            'en': 'Strengthening identity, brotherhood, and shared values for over 180 boys and girls in Kfar Kama.',
+            'ar': 'تعزيز الهوية والأخوة والقيم المشتركة لأكثر من 180 طالباً وطالبة في كفر كما.',
+            'he': 'חיזוק הזהות, האחווה והערכים המשותפים עבור למעלה מ־180 תלמידים ותלמידות בכפר כמא.',
+          },
+          l,
+        ),
+        t(
+          {
+            'en':
+                'Powered by 50+ dedicated volunteers nurturing a generation that lives by the guidance of the Qur’an.',
+            'ar': 'بجهود أكثر من 50 متطوعاً مخلصاً في تربية جيل يعيش بهدي القرآن الكريم ويخدم مجتمعه.',
+            'he': 'מופעל על ידי למעלה מ־50 מתנדבים מסורים המטפחים דור שחי לאורו של הקוראן ותורם לקהילה.',
+          },
+          l,
+        ),
       ];
 }
 
@@ -103,6 +145,12 @@ class DonationContent {
     'he': 'כל פסוק שנשנן וכל אות שנקרא – מוסיפים לשכרם של התומכים בדרך הזאת.',
   };
 
+  static const recurringBadge = {
+    'en': 'Monthly Standing Order (הוראת קבע) Recommended',
+    'ar': 'يُوصى بالتبرع الشهري الثابت (הוראת קבע)',
+    'he': 'מומלץ להצטרף כשותפים קבועים בהוראת קבע',
+  };
+
   static const cardCta = {
     'he': 'תרומה באשראי / הוראת קבע',
     'ar': 'تبرّع بالبطاقة / تبرّع شهري',
@@ -116,8 +164,8 @@ class DonationContent {
   };
 
   static const bankTitle = {
-    'en': 'Bank Transfer',
-    'ar': 'تحويل بنكي',
+    'en': 'Direct Bank Transfer',
+    'ar': 'تحويل بنكي مباشر',
     'he': 'העברה בנקאית',
   };
 
@@ -125,20 +173,20 @@ class DonationContent {
   static const bankDetails = {
     'en':
         'Bank: 17 – Mercantile Discount\nBranch: HaTavor 695\nAccount Name: Dar al-Fajr Kfar Kama\nAccount Number: 69187',
-    'ar': 'البنك: 17 – مركنتיל ديسكونت\nالفرع: التابور 695\nاسم الحساب: دار الفجر كفر كما\nرقم الحساب: 69187',
+    'ar': 'البنك: 17 – مركنتيل ديسكونت\nالفرع: التابور 695\nاسم الحساب: دار الفجر كفر كما\nرقم الحساب: 69187',
     'he': 'בנק: 17 - מרכנתיל דיסקונט בע"מ\nסניף: התבור 695\nשם המוטב: דאר אל פג׳ר כפר כמא\nמספר חשבון: 69187',
   };
 
   static const copyCta = {
-    'en': 'Copy Details',
-    'ar': 'نسخ التفاصيل',
-    'he': 'העתקת פרטים',
+    'en': 'Copy All Details',
+    'ar': 'نسخ جميع التفاصيل',
+    'he': 'העתקת כל הפרטים',
   };
 
   static const copied = {
-    'en': 'Bank details copied',
-    'ar': 'تم نسخ التفاصيل البنكية',
-    'he': 'פרטי הבנק הועתקו',
+    'en': 'Copied to clipboard',
+    'ar': 'تم النسخ',
+    'he': 'הועתק ללוח',
   };
 }
 
@@ -160,9 +208,20 @@ class BankDetails {
       'Bank: $bankName\nAccount Name: $accountName\nAccount Number: $accountNumber\nIBAN: $iban\nSWIFT: $swift';
 }
 
-/// ===== Photos section (paths only; text is minimal) =====
+/// ===== Photos section =====
 class PhotosContent {
-  // If you want to use this instead of PageView’s generator, list your real assets:
+  static const title = {
+    'en': 'Campus & Community Gallery',
+    'ar': 'معرض صور المركز',
+    'he': 'גלריית תמונות מהמרכז',
+  };
+
+  static const subtitle = {
+    'en': 'Moments from our weekly study circles, student activities, and community gatherings in Kfar Kama.',
+    'ar': 'لمحات من حلقات التحفيظ الأسبوعية، أنشطة الطلاب، واللقاءات التربوية في كفر كما.',
+    'he': 'רגעים מתוך שיעורי הקוראן, הפעילויות החינוכיות והמפגשים הקהילתיים שלנו בכפר כמא.',
+  };
+
   static const _count = 27;
   static const _dir = 'assets/images';
   static const _prefix = 'image-';
@@ -178,9 +237,15 @@ class PhotosContent {
 /// ===== Contact section =====
 class ContactContent {
   static const title = {
-    'en': 'Contact Us',
-    'ar': 'تواصل معنا',
-    'he': 'צרו קשר',
+    'en': 'Contact & Secretariat',
+    'ar': 'تواصل معنا والسكرتارية',
+    'he': 'צרו קשר ומזכירות',
+  };
+
+  static const subtitle = {
+    'en': 'Contact the secretariat directly during office hours.',
+    'ar': 'يمكنكم التواصل مع سكرتارية المركز مباشرة خلال ساعات الدوام.',
+    'he': 'ניתן לפנות ישירות למזכירות המרכז בשעות הפעילות.',
   };
 
   static const officeHoursTitle = {
@@ -190,9 +255,9 @@ class ContactContent {
   };
 
   static const officeHoursValue = {
-    'en': 'Sunday – Thursday, 16:00 – 18:00',
-    'ar': 'الأحد – الخميس، 16:00 – 18:00',
-    'he': 'ראשון – חמישי, 16:00 – 18:00',
+    'en': 'Sunday – Thursday\n16:00 – 18:00',
+    'ar': 'الأحد – الخميس\n16:00 – 18:00',
+    'he': 'ראשון – חמישי\n16:00 – 18:00',
   };
 
   static const call = {'en': 'Call', 'ar': 'اتصال', 'he': 'שיחה'};
@@ -201,6 +266,18 @@ class ContactContent {
   static const instagram = {'en': 'Instagram', 'ar': 'انستاجرام', 'he': 'אינסטגרם'};
   static const phone = {'en': 'Phone', 'ar': 'هاتف', 'he': 'טלפון'};
   static const email = {'en': 'Email', 'ar': 'بريد إلكتروني', 'he': 'אימייל'};
+
+  static const boardSectionTitle = {
+    'en': 'Board Members',
+    'ar': 'أعضاء إدارة الجمعية',
+    'he': 'חברי העמותה',
+  };
+
+  static const keyPeopleSectionTitle = {
+    'en': 'Key People',
+    'ar': 'إدارة المركز',
+    'he': 'הנהלת המרכז',
+  };
 
   static List<Member> boardMembers = const [
     Member(
@@ -233,9 +310,18 @@ class ContactContent {
       phone: 'tel:+972526034686',
       whatsapp: 'https://wa.me/972526034686',
     ),
+  ];
+
+  static List<Member> keyPeople = const [
     Member(
       name: {'en': 'Othman Shawgan', 'ar': 'عثمان شوجن', 'he': "עות'מאן שוגן"},
       role: {'en': 'Director of Education', 'ar': 'المدير التعليمي', 'he': 'מנהל הלימודים'},
+      phone: '',
+      whatsapp: '',
+    ),
+    Member(
+      name: {'en': 'Sana Patuash', 'ar': 'سناء بطواش', 'he': 'סנא פטואש'},
+      role: {'en': "Girls' Center Director", 'ar': 'مديرة مركز الفتيات', 'he': 'מנהלת מרכז הבנות'},
       phone: '',
       whatsapp: '',
     ),
@@ -265,4 +351,25 @@ class NavContent {
   static const donate = {'en': 'Donate', 'ar': 'تبرّع', 'he': 'תרומה'};
   static const photos = {'en': 'Photos', 'ar': 'صور', 'he': 'תמונות'};
   static const contact = {'en': 'Contact', 'ar': 'تواصل', 'he': 'יצירת קשר'};
+}
+
+/// ===== Footer labels =====
+class FooterContent {
+  static const tagline = {
+    'en': 'Islamic Education & Community Center • Kfar Kama',
+    'ar': 'مركز تعليمي إسلامي ومجتمعي • كفر كما',
+    'he': 'מרכז חינוך אסלאמי וקהילתי • כפר כמא',
+  };
+
+  static const registration = {
+    'en': 'Registered Non-Profit Association (Amuta) #580814747',
+    'ar': 'جمعية غير ربحية مسجلة رقم 580814747',
+    'he': 'עמותה רשומה (ע"ר) מס׳ 580814747',
+  };
+
+  static const rights = {
+    'en': '© Dar al-Fajr Kfar Kama. All rights reserved.',
+    'ar': '© دار الفجر كفر كما. جميع الحقوق محفوظة.',
+    'he': '© דאר אל-פג׳ר כפר כמא. כל הזכויות שמורות.',
+  };
 }
